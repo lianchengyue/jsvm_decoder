@@ -3,7 +3,7 @@
 #include "H264AVCCommonLib/MbDataAccess.h"
 #include "H264AVCCommonLib/Frame.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 const BlkMode MbDataAccess::m_aucBMTabB0[13] =
 {
@@ -134,7 +134,7 @@ const UChar MbDataAccess::m_auc4x4Idx28x8Idx [16 ]  = { 0, 0, 1, 1,   0, 0, 1, 1
 
 
 
-Void MbDataAccess::xGetMvPredictor( Mv& rcMvPred, SChar scRef, ListIdx eListIdx, PredictionType ePredType, LumaIdx cIdx, LumaIdx cIdxEnd )
+Void MbDataAccess::xGetMvPredictor(Mv& rcMvPred, SChar scRef, ListIdx eListIdx, PredictionType ePredType, LumaIdx cIdx, LumaIdx cIdxEnd)
 {
     const Bool bCurrentFieldFlag = m_rcMbCurr.getFieldFlag();
 
@@ -144,35 +144,35 @@ Void MbDataAccess::xGetMvPredictor( Mv& rcMvPred, SChar scRef, ListIdx eListIdx,
     B4x4Idx cIdxD             = cIdx   .b4x4();
     B4x4Idx cIdxC             = cIdxEnd.b4x4();
 
-    const MbData& rcMbDataA   = xGetBlockLeft      ( cIdxA );
-    const MbData& rcMbDataB   = xGetBlockAbove     ( cIdxB );
-    const MbData& rcMbDataC   = xGetBlockAboveRight( cIdxC );
+    const MbData& rcMbDataA   = xGetBlockLeft      (cIdxA);
+    const MbData& rcMbDataB   = xGetBlockAbove     (cIdxB);
+    const MbData& rcMbDataC   = xGetBlockAboveRight(cIdxC);
 
-    rcMbDataA.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_A, cIdxA, bCurrentFieldFlag );
-    rcMbDataB.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_B, cIdxB, bCurrentFieldFlag );
-    rcMbDataC.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_C, cIdxC, bCurrentFieldFlag );
-    if( m_cMv3D_C == BLOCK_NOT_AVAILABLE )
+    rcMbDataA.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_A, cIdxA, bCurrentFieldFlag);
+    rcMbDataB.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_B, cIdxB, bCurrentFieldFlag);
+    rcMbDataC.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_C, cIdxC, bCurrentFieldFlag);
+    if(m_cMv3D_C == BLOCK_NOT_AVAILABLE)
     {
-        const MbData& rcMbDataD = xGetBlockAboveLeft ( cIdxD );
-        rcMbDataD.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_C, cIdxD, bCurrentFieldFlag );
+        const MbData& rcMbDataD = xGetBlockAboveLeft (cIdxD);
+        rcMbDataD.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_C, cIdxD, bCurrentFieldFlag);
     }
 
     //===== check directional prediction types =====
-    if(( ePredType == PRED_A && m_cMv3D_A == scRef ) ||
-       ( m_cMv3D_A == scRef  && m_cMv3D_B != scRef && m_cMv3D_C != scRef ) ||
-       ( m_cMv3D_B == BLOCK_NOT_AVAILABLE && m_cMv3D_C == BLOCK_NOT_AVAILABLE ) )
+    if((ePredType == PRED_A && m_cMv3D_A == scRef) ||
+       (m_cMv3D_A == scRef  && m_cMv3D_B != scRef && m_cMv3D_C != scRef) ||
+       (m_cMv3D_B == BLOCK_NOT_AVAILABLE && m_cMv3D_C == BLOCK_NOT_AVAILABLE))
     {
         rcMvPred = m_cMv3D_A;
         return;
     }
-    if(( ePredType == PRED_B && m_cMv3D_B == scRef) ||
-       ( m_cMv3D_A != scRef  && m_cMv3D_B == scRef && m_cMv3D_C != scRef))
+    if((ePredType == PRED_B && m_cMv3D_B == scRef) ||
+       (m_cMv3D_A != scRef  && m_cMv3D_B == scRef && m_cMv3D_C != scRef))
     {
         rcMvPred = m_cMv3D_B;
         return;
     }
-    if(( ePredType == PRED_C && m_cMv3D_C == scRef ) ||
-       ( m_cMv3D_A != scRef  && m_cMv3D_B != scRef && m_cMv3D_C == scRef))
+    if((ePredType == PRED_C && m_cMv3D_C == scRef) ||
+       (m_cMv3D_A != scRef  && m_cMv3D_B != scRef && m_cMv3D_C == scRef))
     {
         rcMvPred = m_cMv3D_C;
         return;
@@ -180,138 +180,138 @@ Void MbDataAccess::xGetMvPredictor( Mv& rcMvPred, SChar scRef, ListIdx eListIdx,
 
 #define MEDIAN(a,b,c)  ((a)>(b)?(a)>(c)?(b)>(c)?(b):(c):(a):(b)>(c)?(a)>(c)?(a):(c):(b))
     {
-        rcMvPred.setHor( MEDIAN( m_cMv3D_A.getHor(), m_cMv3D_B.getHor(), m_cMv3D_C.getHor() ) );
-        rcMvPred.setVer( MEDIAN( m_cMv3D_A.getVer(), m_cMv3D_B.getVer(), m_cMv3D_C.getVer() ) );
+        rcMvPred.setHor(MEDIAN(m_cMv3D_A.getHor(), m_cMv3D_B.getHor(), m_cMv3D_C.getHor()));
+        rcMvPred.setVer(MEDIAN(m_cMv3D_A.getVer(), m_cMv3D_B.getVer(), m_cMv3D_C.getVer()));
     }
 #undef MEDIAN
 }
 
 
 
-UInt MbDataAccess::getCtxCoeffCount( LumaIdx cIdx, UInt uiStart, UInt uiStop )  const
+UInt MbDataAccess::getCtxCoeffCount(LumaIdx cIdx, UInt uiStart, UInt uiStop)  const
 {
   Bool bLeftAvailable = false;
   UInt uiCoeffCount   = 0;
 
   {
-    B4x4Idx cIdxL( cIdx.b4x4() );
-    const MbData& rcMbDataLeft = xGetBlockLeft( cIdxL );
+    B4x4Idx cIdxL(cIdx.b4x4());
+    const MbData& rcMbDataLeft = xGetBlockLeft(cIdxL);
 
-    if( xIsAvailable( rcMbDataLeft ) )
+    if(xIsAvailable(rcMbDataLeft))
     {
       bLeftAvailable = true;
-      if( ( uiStart == 0 && uiStop == 16 ) || rcMbDataLeft.isPCM() )
+      if((uiStart == 0 && uiStop == 16) || rcMbDataLeft.isPCM())
       {
-        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().getCoeffCount( cIdxL );
+        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().getCoeffCount(cIdxL);
       }
       else
       {
-        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().calcCoeffCount( cIdxL, rcMbDataLeft.isTransformSize8x8(),
+        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().calcCoeffCount(cIdxL, rcMbDataLeft.isTransformSize8x8(),
                                                                   rcMbDataLeft.getFieldFlag(),
-                                                                  rcMbDataLeft.isIntra16x16() ? gMax( 1, uiStart) : uiStart,
-                                                                  uiStop );
+                                                                  rcMbDataLeft.isIntra16x16() ? gMax(1, uiStart) : uiStart,
+                                                                  uiStop);
       }
     }
   }
 
-  const MbData& rcMbDataAbove = xGetBlockAbove( cIdx );
-  if( xIsAvailable( rcMbDataAbove ) )
+  const MbData& rcMbDataAbove = xGetBlockAbove(cIdx);
+  if(xIsAvailable(rcMbDataAbove))
   {
-    if( ( uiStart == 0 && uiStop == 16 ) || rcMbDataAbove.isPCM() )
+    if((uiStart == 0 && uiStop == 16) || rcMbDataAbove.isPCM())
     {
-      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().getCoeffCount( cIdx );
+      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().getCoeffCount(cIdx);
     }
     else
     {
-      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().calcCoeffCount( cIdx, rcMbDataAbove.isTransformSize8x8(),
+      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().calcCoeffCount(cIdx, rcMbDataAbove.isTransformSize8x8(),
                                                                    rcMbDataAbove.getFieldFlag(),
-                                                                   rcMbDataAbove.isIntra16x16() ? gMax( 1, uiStart) : uiStart,
-                                                                   uiStop );
+                                                                   rcMbDataAbove.isIntra16x16() ? gMax(1, uiStart) : uiStart,
+                                                                   uiStop);
     }
-    if( bLeftAvailable )
+    if(bLeftAvailable)
     {
       uiCoeffCount  += 1;
       uiCoeffCount >>= 1;
     }
   }
 
-  if( 4 > uiCoeffCount )
+  if(4 > uiCoeffCount)
   {
     uiCoeffCount >>= 1;
   }
   else
   {
-    uiCoeffCount = ( 8 > uiCoeffCount) ? 2 : 3;
+    uiCoeffCount = (8 > uiCoeffCount) ? 2 : 3;
   }
 
   return uiCoeffCount;
 }
 
 
-UInt MbDataAccess::getCtxCoeffCount( ChromaIdx cIdx, UInt uiStart, UInt uiStop )  const
+UInt MbDataAccess::getCtxCoeffCount(ChromaIdx cIdx, UInt uiStart, UInt uiStop)  const
 {
   Bool bLeftAvailable = false;
   UInt uiCoeffCount     = 0;
 
-  B4x4Idx       cLumIdx( m_aucChroma2LumaIdx[ cIdx ] );
-  Int           iComp = ( cIdx >> 2) << 2;
+  B4x4Idx       cLumIdx(m_aucChroma2LumaIdx[ cIdx ]);
+  Int           iComp = (cIdx >> 2) << 2;
 
   {
     B4x4Idx cLumIdxL = cLumIdx;
-    const MbData& rcMbDataLeft = xGetBlockLeft( cLumIdxL );
+    const MbData& rcMbDataLeft = xGetBlockLeft(cLumIdxL);
 
-    if( xIsAvailable( rcMbDataLeft ) )
+    if(xIsAvailable(rcMbDataLeft))
     {
       bLeftAvailable = true;
-      if( ( uiStart == 0 && uiStop == 16 ) || rcMbDataLeft.isPCM() )
+      if((uiStart == 0 && uiStop == 16) || rcMbDataLeft.isPCM())
       {
-        uiCoeffCount += rcMbDataLeft.getMbTCoeffs().getCoeffCount( CIdx( iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4() ] ) );
+        uiCoeffCount += rcMbDataLeft.getMbTCoeffs().getCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4() ]));
       }
       else
       {
-        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().calcCoeffCount( CIdx( iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4() ] ),
+        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().calcCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4() ]),
                                                                   rcMbDataLeft.getFieldFlag() ? g_aucFieldScan : g_aucFrameScan,
                                                                   uiStart,
-                                                                  uiStop );
+                                                                  uiStop);
       }
     }
   }
 
-  const MbData& rcMbDataAbove = xGetBlockAbove( cLumIdx );
-  if( xIsAvailable( rcMbDataAbove ) )
+  const MbData& rcMbDataAbove = xGetBlockAbove(cLumIdx);
+  if(xIsAvailable(rcMbDataAbove))
   {
-    if( ( uiStart == 0 && uiStop == 16 ) || rcMbDataAbove.isPCM() )
+    if((uiStart == 0 && uiStop == 16) || rcMbDataAbove.isPCM())
     {
-      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().getCoeffCount( CIdx( iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4() ] ) );
+      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().getCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4() ]));
     }
     else
     {
-      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().calcCoeffCount( CIdx( iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4() ] ),
+      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().calcCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4() ]),
                                                                   rcMbDataAbove.getFieldFlag() ? g_aucFieldScan : g_aucFrameScan,
                                                                   uiStart,
-                                                                  uiStop );
+                                                                  uiStop);
     }
-    if( bLeftAvailable )
+    if(bLeftAvailable)
     {
       uiCoeffCount  += 1;
       uiCoeffCount >>= 1;
     }
   }
 
-  if( 4 > uiCoeffCount )
+  if(4 > uiCoeffCount)
   {
     uiCoeffCount >>= 1;
   }
   else
   {
-    uiCoeffCount = ( 8 > uiCoeffCount) ? 2 : 3;
+    uiCoeffCount = (8 > uiCoeffCount) ? 2 : 3;
   }
 
   return uiCoeffCount;
 }
 
 
-Void MbDataAccess::xSetMvPredictorsBL( const Mv& rcMvPredBL, ListIdx eListIdx, LumaIdx cIdx, LumaIdx cIdxEnd )
+Void MbDataAccess::xSetMvPredictorsBL(const Mv& rcMvPredBL, ListIdx eListIdx, LumaIdx cIdx, LumaIdx cIdxEnd)
 {
   const Bool bCurrentFieldFlag = m_rcMbCurr.getFieldFlag();
 
@@ -319,18 +319,18 @@ Void MbDataAccess::xSetMvPredictorsBL( const Mv& rcMvPredBL, ListIdx eListIdx, L
   B4x4Idx cIdxA             = cIdx   .b4x4();
   B4x4Idx cIdxB             = cIdx   .b4x4();
 
-  const MbData& rcMbDataA   = xGetBlockLeft      ( cIdxA );
-  const MbData& rcMbDataB   = xGetBlockAbove     ( cIdxB );
+  const MbData& rcMbDataA   = xGetBlockLeft      (cIdxA);
+  const MbData& rcMbDataB   = xGetBlockAbove     (cIdxB);
 
-    rcMbDataA.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_A, cIdxA, bCurrentFieldFlag );
-  rcMbDataB.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_B, cIdxB, bCurrentFieldFlag );
-  m_cMv3D_C.set( rcMvPredBL, 1 );
+    rcMbDataA.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_A, cIdxA, bCurrentFieldFlag);
+  rcMbDataB.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_B, cIdxB, bCurrentFieldFlag);
+  m_cMv3D_C.set(rcMvPredBL, 1);
 }
 
 
 
 
-Void MbDataAccess::xSetNeighboursMvPredictor( ListIdx eListIdx, LumaIdx cIdx, LumaIdx cIdxEnd )
+Void MbDataAccess::xSetNeighboursMvPredictor(ListIdx eListIdx, LumaIdx cIdx, LumaIdx cIdxEnd)
 {
   const Bool bCurrentFieldFlag = m_rcMbCurr.getFieldFlag();
   //===== set motion vector predictors: A, B, C =====
@@ -339,39 +339,39 @@ Void MbDataAccess::xSetNeighboursMvPredictor( ListIdx eListIdx, LumaIdx cIdx, Lu
   B4x4Idx cIdxD             = cIdx   .b4x4();
   B4x4Idx cIdxC             = cIdxEnd.b4x4();
 
-  const MbData& rcMbDataA   = xGetBlockLeft      ( cIdxA );
-  const MbData& rcMbDataB   = xGetBlockAbove     ( cIdxB );
-  const MbData& rcMbDataC   = xGetBlockAboveRight( cIdxC );
+  const MbData& rcMbDataA   = xGetBlockLeft      (cIdxA);
+  const MbData& rcMbDataB   = xGetBlockAbove     (cIdxB);
+  const MbData& rcMbDataC   = xGetBlockAboveRight(cIdxC);
 
-  rcMbDataA.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_A, cIdxA, bCurrentFieldFlag );
-  rcMbDataB.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_B, cIdxB, bCurrentFieldFlag );
-  rcMbDataC.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_C, cIdxC, bCurrentFieldFlag );
-  if( m_cMv3D_C == BLOCK_NOT_AVAILABLE )
+  rcMbDataA.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_A, cIdxA, bCurrentFieldFlag);
+  rcMbDataB.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_B, cIdxB, bCurrentFieldFlag);
+  rcMbDataC.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_C, cIdxC, bCurrentFieldFlag);
+  if(m_cMv3D_C == BLOCK_NOT_AVAILABLE)
   {
-    const MbData& rcMbDataD = xGetBlockAboveLeft ( cIdxD );
-        rcMbDataD.getMbMotionData( eListIdx ).getMv3DNeighbour( m_cMv3D_C, cIdxD, bCurrentFieldFlag );
+    const MbData& rcMbDataD = xGetBlockAboveLeft (cIdxD);
+        rcMbDataD.getMbMotionData(eListIdx).getMv3DNeighbour(m_cMv3D_C, cIdxD, bCurrentFieldFlag);
   }
 }
 
 
-Void MbDataAccess::xGetMvPredictorUseNeighbours( Mv& rcMvPred, SChar scRef, PredictionType ePredType )
+Void MbDataAccess::xGetMvPredictorUseNeighbours(Mv& rcMvPred, SChar scRef, PredictionType ePredType)
 {
   //===== check directional prediction types =====
-  if( ( ePredType == PRED_A && m_cMv3D_A == scRef ) ||
-      ( m_cMv3D_A == scRef  && m_cMv3D_B != scRef && m_cMv3D_C != scRef ) ||
-      ( m_cMv3D_B == BLOCK_NOT_AVAILABLE && m_cMv3D_C == BLOCK_NOT_AVAILABLE ) )
+  if((ePredType == PRED_A && m_cMv3D_A == scRef) ||
+      (m_cMv3D_A == scRef  && m_cMv3D_B != scRef && m_cMv3D_C != scRef) ||
+      (m_cMv3D_B == BLOCK_NOT_AVAILABLE && m_cMv3D_C == BLOCK_NOT_AVAILABLE))
   {
     rcMvPred = m_cMv3D_A;
     return;
   }
-  if( ( ePredType == PRED_B && m_cMv3D_B == scRef ) ||
-      ( m_cMv3D_A != scRef  && m_cMv3D_B == scRef && m_cMv3D_C != scRef ) )
+  if((ePredType == PRED_B && m_cMv3D_B == scRef) ||
+      (m_cMv3D_A != scRef  && m_cMv3D_B == scRef && m_cMv3D_C != scRef))
   {
     rcMvPred = m_cMv3D_B;
     return;
   }
-  if( ( ePredType == PRED_C && m_cMv3D_C == scRef ) ||
-      ( m_cMv3D_A != scRef  && m_cMv3D_B != scRef && m_cMv3D_C == scRef ) )
+  if((ePredType == PRED_C && m_cMv3D_C == scRef) ||
+      (m_cMv3D_A != scRef  && m_cMv3D_B != scRef && m_cMv3D_C == scRef))
   {
     rcMvPred = m_cMv3D_C;
     return;
@@ -379,8 +379,8 @@ Void MbDataAccess::xGetMvPredictorUseNeighbours( Mv& rcMvPred, SChar scRef, Pred
 
 #define MEDIAN(a,b,c)  ((a)>(b)?(a)>(c)?(b)>(c)?(b):(c):(a):(b)>(c)?(a)>(c)?(a):(c):(b))
   {
-    rcMvPred.setHor( MEDIAN( m_cMv3D_A.getHor(), m_cMv3D_B.getHor(), m_cMv3D_C.getHor() ) );
-    rcMvPred.setVer( MEDIAN( m_cMv3D_A.getVer(), m_cMv3D_B.getVer(), m_cMv3D_C.getVer() ) );
+    rcMvPred.setHor(MEDIAN(m_cMv3D_A.getHor(), m_cMv3D_B.getHor(), m_cMv3D_C.getHor()));
+    rcMvPred.setVer(MEDIAN(m_cMv3D_A.getVer(), m_cMv3D_B.getVer(), m_cMv3D_C.getVer()));
   }
 #undef MEDIAN
 }
@@ -389,30 +389,30 @@ Void MbDataAccess::xGetMvPredictorUseNeighbours( Mv& rcMvPred, SChar scRef, Pred
 Void MbDataAccess::getMvPredictorSkipMode()
 {
   Mv cMvPred;
-  xGetMvPredictor( cMvPred, 1, LIST_0, MEDIAN, B4x4Idx(0), B4x4Idx(3) );
+  xGetMvPredictor(cMvPred, 1, LIST_0, MEDIAN, B4x4Idx(0), B4x4Idx(3));
 
-  if( ( m_cMv3D_A.getRef()==BLOCK_NOT_AVAILABLE ||
-        m_cMv3D_B.getRef()==BLOCK_NOT_AVAILABLE      ) ||
-      ( m_cMv3D_A.getHor()==0 && m_cMv3D_A.getVer()==0 && m_cMv3D_A.getRef()==1 ) ||
-      ( m_cMv3D_B.getHor()==0 && m_cMv3D_B.getVer()==0 && m_cMv3D_B.getRef()==1 )   )
+  if((m_cMv3D_A.getRef()==BLOCK_NOT_AVAILABLE ||
+        m_cMv3D_B.getRef()==BLOCK_NOT_AVAILABLE     ) ||
+      (m_cMv3D_A.getHor()==0 && m_cMv3D_A.getVer()==0 && m_cMv3D_A.getRef()==1) ||
+      (m_cMv3D_B.getHor()==0 && m_cMv3D_B.getVer()==0 && m_cMv3D_B.getRef()==1)  )
   {
     cMvPred.setZero();
   }
 
-  getMbMotionData( LIST_0 ).setRefIdx ( 1 );
-  getMbMotionData( LIST_0 ).setAllMv( cMvPred );
+  getMbMotionData(LIST_0).setRefIdx (1);
+  getMbMotionData(LIST_0).setAllMv(cMvPred);
 }
 
 
 
-Void MbDataAccess::getMvPredictorSkipMode( Mv& rcMvPred )
+Void MbDataAccess::getMvPredictorSkipMode(Mv& rcMvPred)
 {
-  xGetMvPredictor( rcMvPred, 1, LIST_0, MEDIAN, B4x4Idx(0), B4x4Idx(3) );
+  xGetMvPredictor(rcMvPred, 1, LIST_0, MEDIAN, B4x4Idx(0), B4x4Idx(3));
 
-  if( ( m_cMv3D_A.getRef()==BLOCK_NOT_AVAILABLE ||
-        m_cMv3D_B.getRef()==BLOCK_NOT_AVAILABLE      ) ||
-      ( m_cMv3D_A.getHor()==0 && m_cMv3D_A.getVer()==0 && m_cMv3D_A.getRef()==1 ) ||
-      ( m_cMv3D_B.getHor()==0 && m_cMv3D_B.getVer()==0 && m_cMv3D_B.getRef()==1 )   )
+  if((m_cMv3D_A.getRef()==BLOCK_NOT_AVAILABLE ||
+        m_cMv3D_B.getRef()==BLOCK_NOT_AVAILABLE     ) ||
+      (m_cMv3D_A.getHor()==0 && m_cMv3D_A.getVer()==0 && m_cMv3D_A.getRef()==1) ||
+      (m_cMv3D_B.getHor()==0 && m_cMv3D_B.getVer()==0 && m_cMv3D_B.getRef()==1)  )
   {
     rcMvPred.setZero();
   }
@@ -420,11 +420,11 @@ Void MbDataAccess::getMvPredictorSkipMode( Mv& rcMvPred )
 
 
 
-Void MbDataAccess::addMvPredictors( std::vector<Mv>& rcMvPredList ) const
+Void MbDataAccess::addMvPredictors(std::vector<Mv>& rcMvPredList) const
 {
-  rcMvPredList.push_back( m_cMv3D_A );
-  rcMvPredList.push_back( m_cMv3D_B );
-  rcMvPredList.push_back( m_cMv3D_C );
+  rcMvPredList.push_back(m_cMv3D_A);
+  rcMvPredList.push_back(m_cMv3D_B);
+  rcMvPredList.push_back(m_cMv3D_C);
 }
 
 
@@ -438,67 +438,67 @@ Void MbDataAccess::setAvailableMask()
 
   //===== get availability for upper half of the macroblock =====
   UInt  bAvailable0 = 0;
-  if( ! xIsAvailableIntra( xGetBlockLeft( ( cIdx = cIdx0 ) ) ) )
+  if(! xIsAvailableIntra(xGetBlockLeft((cIdx = cIdx0))))
   {
     bAvailable0 |= NO_LEFT_REF;
   }
-  if( ! xIsAvailableIntra( xGetBlockAbove( ( cIdx = cIdx0 ) ) ) )
+  if(! xIsAvailableIntra(xGetBlockAbove((cIdx = cIdx0))))
   {
     bAvailable0 |= NO_ABOVE_REF;
   }
-  if( ! xIsAvailableIntra( xGetBlockAboveLeft( ( cIdx = cIdx0 ) ) ) )
+  if(! xIsAvailableIntra(xGetBlockAboveLeft((cIdx = cIdx0))))
   {
     bAvailable0 |= NO_ABOVELEFT_REF;
   }
-  if( ! xIsAvailableIntra( xGetBlockAboveRight( ( cIdx = cIdx3 ) ) ) )
+  if(! xIsAvailableIntra(xGetBlockAboveRight((cIdx = cIdx3))))
   {
     bAvailable0 |= NO_ABOVERIGHT_REF;
   }
 
   //===== get availability for lower half of the macroblock =====
   UInt  bAvailable8 = NO_ABOVERIGHT_REF;
-  if( ! xIsAvailableIntra( xGetBlockLeft( ( cIdx = cIdx8 ) ) ) )
+  if(! xIsAvailableIntra(xGetBlockLeft((cIdx = cIdx8))))
   {
     bAvailable8 |= NO_LEFT_REF;
   }
-  if( ! xIsAvailableIntra( xGetBlockAboveLeft( ( cIdx = cIdx8 ) ) ) )
+  if(! xIsAvailableIntra(xGetBlockAboveLeft((cIdx = cIdx8))))
   {
     bAvailable8 |= NO_ABOVELEFT_REF;
   }
 
-  if( ! getMbData().getFieldFlag() && m_rcMbLeft.getFieldFlag() )
+  if(! getMbData().getFieldFlag() && m_rcMbLeft.getFieldFlag())
   {
-    if( ! ( bAvailable0 & NO_LEFT_REF ) )
+    if(! (bAvailable0 & NO_LEFT_REF))
     {
-      if( ! xIsAvailableIntra( xGetBlockLeftBottom( cIdx = cIdx0 ) ) )
+      if(! xIsAvailableIntra(xGetBlockLeftBottom(cIdx = cIdx0)))
       {
         bAvailable0 |= NO_LEFT_REF;
       }
     }
-    if( ! ( bAvailable8 & NO_LEFT_REF ) )
+    if(! (bAvailable8 & NO_LEFT_REF))
     {
-      if( ! xIsAvailableIntra( xGetBlockLeftBottom( cIdx = cIdx0 ) ) )
+      if(! xIsAvailableIntra(xGetBlockLeftBottom(cIdx = cIdx0)))
       {
         bAvailable8 |= NO_LEFT_REF;
       }
     }
   }
 
-  m_uiAvailable = bAvailable0 + ( bAvailable8 << 4 );
+  m_uiAvailable = bAvailable0 + (bAvailable8 << 4);
 }
 
 
 
-UInt MbDataAccess::getConvertBlkMode( Par8x8 ePar8x8 )
+UInt MbDataAccess::getConvertBlkMode(Par8x8 ePar8x8)
 {
-  const BlkMode eBlkMode = m_rcMbCurr.getBlkMode( ePar8x8 );
-  AOT_DBG( m_rcSliceHeader.isIntraSlice() );
-  ROTRS( ! m_rcSliceHeader.isBSlice(), eBlkMode - BLK_8x8 );
+  const BlkMode eBlkMode = m_rcMbCurr.getBlkMode(ePar8x8);
+  AOT_DBG(m_rcSliceHeader.isIntraSlice());
+  ROTRS(! m_rcSliceHeader.isBSlice(), eBlkMode - BLK_8x8);
 
   UInt uiCode;
 
-  UInt uiFwdBwd = m_rcMbCurr.getBlockFwdBwd( ePar8x8 );
-  switch( eBlkMode )
+  UInt uiFwdBwd = m_rcMbCurr.getBlockFwdBwd(ePar8x8);
+  switch(eBlkMode)
   {
   case BLK_SKIP:
     {
@@ -536,20 +536,20 @@ UInt MbDataAccess::getConvertBlkMode( Par8x8 ePar8x8 )
 
 
 
-ErrVal MbDataAccess::setConvertBlkMode( Par8x8 ePar8x8, UInt uiBlockMode )
+ErrVal MbDataAccess::setConvertBlkMode(Par8x8 ePar8x8, UInt uiBlockMode)
 {
-  if( m_rcSliceHeader.isBSlice() )
+  if(m_rcSliceHeader.isBSlice())
   {
-    ROT( uiBlockMode > 13 );
-    m_rcMbCurr.setBlkMode( ePar8x8, m_aucBMTabB0[uiBlockMode] );
-    m_rcMbCurr.addFwdBwd(  ePar8x8, m_aucBMTabB1[uiBlockMode] );
+    ROT(uiBlockMode > 13);
+    m_rcMbCurr.setBlkMode(ePar8x8, m_aucBMTabB0[uiBlockMode]);
+    m_rcMbCurr.addFwdBwd( ePar8x8, m_aucBMTabB1[uiBlockMode]);
     return Err::m_nOK;
   }
   else
   {
-    ROT( uiBlockMode >= 4 );
-    m_rcMbCurr.setBlkMode( ePar8x8, m_aucBMTabP[uiBlockMode] );
-    m_rcMbCurr.addFwdBwd(  ePar8x8, 1 );
+    ROT(uiBlockMode >= 4);
+    m_rcMbCurr.setBlkMode(ePar8x8, m_aucBMTabP[uiBlockMode]);
+    m_rcMbCurr.addFwdBwd( ePar8x8, 1);
     return Err::m_nOK;
   }
   return Err::m_nERR;
@@ -561,14 +561,14 @@ UInt MbDataAccess::getConvertMbType()
 {
   MbMode eMbMode = m_rcMbCurr.getMbMode();
 
-  ROTRS( m_rcSliceHeader.isPSlice(), eMbMode );
+  ROTRS(m_rcSliceHeader.isPSlice(), eMbMode);
 
-  ROTRS( m_rcSliceHeader.isIntraSlice(), eMbMode - INTRA_4X4 );
+  ROTRS(m_rcSliceHeader.isIntraSlice(), eMbMode - INTRA_4X4);
 
-  if( m_rcSliceHeader.isBSlice() )
+  if(m_rcSliceHeader.isBSlice())
   {
     UInt uiMbType = 0;
-    switch( eMbMode )
+    switch(eMbMode)
     {
     case MODE_SKIP:
       {
@@ -577,20 +577,20 @@ UInt MbDataAccess::getConvertMbType()
       }
     case MODE_16x16:
       {
-         uiMbType = 1 + m_rcMbCurr.getBlockFwdBwd( B_8x8_0 );
+         uiMbType = 1 + m_rcMbCurr.getBlockFwdBwd(B_8x8_0);
          break;
       }
     case MODE_16x8:
       {
-        UInt uiIndex = 3*m_rcMbCurr.getBlockFwdBwd( B_8x8_0 );
-        uiIndex     -=   m_rcMbCurr.getBlockFwdBwd( B_8x8_2 );
+        UInt uiIndex = 3*m_rcMbCurr.getBlockFwdBwd(B_8x8_0);
+        uiIndex     -=   m_rcMbCurr.getBlockFwdBwd(B_8x8_2);
         uiMbType = 1 + m_aucMbType1x2[uiIndex];
         break;
       }
     case MODE_8x16:
       {
-        UInt uiIndex = 3*m_rcMbCurr.getBlockFwdBwd( B_8x8_0 );
-        uiIndex     -=   m_rcMbCurr.getBlockFwdBwd( B_8x8_1 );
+        UInt uiIndex = 3*m_rcMbCurr.getBlockFwdBwd(B_8x8_0);
+        uiIndex     -=   m_rcMbCurr.getBlockFwdBwd(B_8x8_1);
         uiMbType = 1 + m_aucMbType2x1[uiIndex];
         break;
       }
@@ -606,7 +606,7 @@ UInt MbDataAccess::getConvertMbType()
       }
     default:
       {
-        ROT( eMbMode < INTRA_4X4 );
+        ROT(eMbMode < INTRA_4X4);
         uiMbType = 1 + (eMbMode - INTRA_4X4 + 23);
         break;
       }
@@ -621,96 +621,96 @@ UInt MbDataAccess::getConvertMbType()
 
 
 
-ErrVal  MbDataAccess::setConvertMbType( UInt uiMbType )
+ErrVal  MbDataAccess::setConvertMbType(UInt uiMbType)
 {
-  if( m_rcSliceHeader.isBSlice() )
+  if(m_rcSliceHeader.isBSlice())
   {
-    if( uiMbType < 23 )
+    if(uiMbType < 23)
     {
-      m_rcMbCurr.setMbMode( m_aausInterBMbType0[ uiMbType ] );
-      m_rcMbCurr.setFwdBwd( m_aausInterBMbType1[ uiMbType ] );
+      m_rcMbCurr.setMbMode(m_aausInterBMbType0[ uiMbType ]);
+      m_rcMbCurr.setFwdBwd(m_aausInterBMbType1[ uiMbType ]);
       return Err::m_nOK;
     }
 
-    ROT( uiMbType > 25 + 23 );
-    m_rcMbCurr.setMbMode( MbMode(uiMbType-23+INTRA_4X4) );
-    m_rcMbCurr.setFwdBwd( 0 );
+    ROT(uiMbType > 25 + 23);
+    m_rcMbCurr.setMbMode(MbMode(uiMbType-23+INTRA_4X4));
+    m_rcMbCurr.setFwdBwd(0);
     return Err::m_nOK;
   }
 
-  if( m_rcSliceHeader.isIntraSlice() )
+  if(m_rcSliceHeader.isIntraSlice())
   {
-    ROT( uiMbType > 25 );
-    m_rcMbCurr.setMbMode( MbMode(uiMbType + INTRA_4X4) );
-    m_rcMbCurr.setFwdBwd( 0 );
+    ROT(uiMbType > 25);
+    m_rcMbCurr.setMbMode(MbMode(uiMbType + INTRA_4X4));
+    m_rcMbCurr.setFwdBwd(0);
     return Err::m_nOK;
   }
 
   // inter P
-  m_rcMbCurr.setMbMode( MbMode(++uiMbType) );
-  m_rcMbCurr.setFwdBwd( (uiMbType < INTRA_4X4) ? 0x1111 : 0 );
-  ROT( uiMbType > 25 + 6 );
+  m_rcMbCurr.setMbMode(MbMode(++uiMbType));
+  m_rcMbCurr.setFwdBwd((uiMbType < INTRA_4X4) ? 0x1111 : 0);
+  ROT(uiMbType > 25 + 6);
   return Err::m_nOK;
 }
 
 ErrVal
-MbDataAccess::setSVCDirectModeMvAndRef( RefFrameList& rcRefList0,
+MbDataAccess::setSVCDirectModeMvAndRef(RefFrameList& rcRefList0,
                                         RefFrameList& rcRefList1,
-                                        Int           i8x8Blk     /* = -1 for entire macroblock */ )
+                                        Int           i8x8Blk     /* = -1 for entire macroblock */)
 {
-  UInt  uiFirst4x4Index = ( i8x8Blk == 3 ? 10 : i8x8Blk == 2 ? 8 : i8x8Blk == 1 ? 2 : i8x8Blk == 0 ? 0 : 0 );
-  UInt  uiLast4x4Index  = ( i8x8Blk == 3 ? 11 : i8x8Blk == 2 ? 9 : i8x8Blk == 1 ? 3 : i8x8Blk == 0 ? 1 : 3 );
+  UInt  uiFirst4x4Index = (i8x8Blk == 3 ? 10 : i8x8Blk == 2 ? 8 : i8x8Blk == 1 ? 2 : i8x8Blk == 0 ? 0 : 0);
+  UInt  uiLast4x4Index  = (i8x8Blk == 3 ? 11 : i8x8Blk == 2 ? 9 : i8x8Blk == 1 ? 3 : i8x8Blk == 0 ? 1 : 3);
   SChar ascRefIdx [2];
   Mv    acMv      [2];
-  for(  UInt uiListIdx = 0; uiListIdx < 2; uiListIdx++ )
+  for( UInt uiListIdx = 0; uiListIdx < 2; uiListIdx++)
   {
-    ListIdx eListIdx = ( uiListIdx ? LIST_1 : LIST_0 );
-    xSetNeighboursMvPredictor( eListIdx, B4x4Idx( uiFirst4x4Index ), B4x4Idx( uiLast4x4Index ) );
-    if( ( ascRefIdx[uiListIdx] = m_cMv3D_A.minRefIdx( m_cMv3D_B ).minRefIdx( m_cMv3D_C ).getRef() ) > 0 )
+    ListIdx eListIdx = (uiListIdx ? LIST_1 : LIST_0);
+    xSetNeighboursMvPredictor(eListIdx, B4x4Idx(uiFirst4x4Index), B4x4Idx(uiLast4x4Index));
+    if((ascRefIdx[uiListIdx] = m_cMv3D_A.minRefIdx(m_cMv3D_B).minRefIdx(m_cMv3D_C).getRef()) > 0)
     {
-      xGetMvPredictorUseNeighbours( acMv[uiListIdx], ascRefIdx[uiListIdx], MEDIAN );
+      xGetMvPredictorUseNeighbours(acMv[uiListIdx], ascRefIdx[uiListIdx], MEDIAN);
     }
   }
-  if( ascRefIdx[0] < 1 && ascRefIdx[1] < 1 )
+  if(ascRefIdx[0] < 1 && ascRefIdx[1] < 1)
   {
     ascRefIdx[0] = 1;
     ascRefIdx[1] = 1;
   }
-  ROF( ascRefIdx[0] <= (SChar)rcRefList0.getActive() && ascRefIdx[1] <= (SChar)rcRefList1.getActive() );
-  if ( i8x8Blk < 0 || i8x8Blk > 3 ) // 16x16
+  ROF(ascRefIdx[0] <= (SChar)rcRefList0.getActive() && ascRefIdx[1] <= (SChar)rcRefList1.getActive());
+  if (i8x8Blk < 0 || i8x8Blk > 3) // 16x16
   {
-    getMbMotionData( LIST_0 ).setRefIdx( ascRefIdx[0] );
-    getMbMotionData( LIST_1 ).setRefIdx( ascRefIdx[1] );
-    getMbMotionData( LIST_0 ).setAllMv ( acMv     [0] );
-    getMbMotionData( LIST_1 ).setAllMv ( acMv     [1] );
+    getMbMotionData(LIST_0).setRefIdx(ascRefIdx[0]);
+    getMbMotionData(LIST_1).setRefIdx(ascRefIdx[1]);
+    getMbMotionData(LIST_0).setAllMv (acMv     [0]);
+    getMbMotionData(LIST_1).setAllMv (acMv     [1]);
   }
   else
   {
-    ParIdx8x8 eParIdx8x8 = ( i8x8Blk == 0 ? PART_8x8_0 : i8x8Blk == 1 ? PART_8x8_1 : i8x8Blk == 2 ? PART_8x8_2 : PART_8x8_3 );
-    getMbMotionData( LIST_0 ).setRefIdx( ascRefIdx[0], eParIdx8x8 );
-    getMbMotionData( LIST_1 ).setRefIdx( ascRefIdx[1], eParIdx8x8 );
-    getMbMotionData( LIST_0 ).setAllMv ( acMv     [0], eParIdx8x8 );
-    getMbMotionData( LIST_1 ).setAllMv ( acMv     [1], eParIdx8x8 );
+    ParIdx8x8 eParIdx8x8 = (i8x8Blk == 0 ? PART_8x8_0 : i8x8Blk == 1 ? PART_8x8_1 : i8x8Blk == 2 ? PART_8x8_2 : PART_8x8_3);
+    getMbMotionData(LIST_0).setRefIdx(ascRefIdx[0], eParIdx8x8);
+    getMbMotionData(LIST_1).setRefIdx(ascRefIdx[1], eParIdx8x8);
+    getMbMotionData(LIST_0).setAllMv (acMv     [0], eParIdx8x8);
+    getMbMotionData(LIST_1).setAllMv (acMv     [1], eParIdx8x8);
   }
   return Err::m_nOK;
 }
 
-Bool MbDataAccess::getMvPredictorDirect( ParIdx8x8 eParIdx,
+Bool MbDataAccess::getMvPredictorDirect(ParIdx8x8 eParIdx,
                                          Bool& rbOneMv,
                                          Bool bFaultTolerant,
                                          RefFrameList* pcL0RefFrameList,
-                                         RefFrameList* pcL1RefFrameList )
+                                         RefFrameList* pcL1RefFrameList)
 {
   rbOneMv = getSH().getSPS().getDirect8x8InferenceFlag();
 
-  if( getSH().getDirectSpatialMvPredFlag() )
+  if(getSH().getDirectSpatialMvPredFlag())
   {
-    return xSpatialDirectMode ( eParIdx, rbOneMv, pcL0RefFrameList, pcL1RefFrameList );
+    return xSpatialDirectMode (eParIdx, rbOneMv, pcL0RefFrameList, pcL1RefFrameList);
   }
-  return xTemporalDirectMode( eParIdx, rbOneMv, bFaultTolerant );
+  return xTemporalDirectMode(eParIdx, rbOneMv, bFaultTolerant);
 }
 
-Bool MbDataAccess::xSpatialDirectMode( ParIdx8x8 eParIdx, Bool b8x8, RefFrameList* pcL0RefFrameList, RefFrameList* pcL1RefFrameList )
+Bool MbDataAccess::xSpatialDirectMode(ParIdx8x8 eParIdx, Bool b8x8, RefFrameList* pcL0RefFrameList, RefFrameList* pcL1RefFrameList)
 
 {
   UInt          uiLstIdx;
@@ -724,19 +724,19 @@ Bool MbDataAccess::xSpatialDirectMode( ParIdx8x8 eParIdx, Bool b8x8, RefFrameLis
   //===== get reference indices and spatially predicted motion vectors =====
   Mv    acMvPred[2];
   SChar ascRefIdx[2];
-  xSetNeighboursMvPredictor(LIST_0, B4x4Idx(0), B4x4Idx(3) );
-  if( ( ascRefIdx[LIST_0] = m_cMv3D_A.minRefIdx( m_cMv3D_B ).minRefIdx( m_cMv3D_C ).getRef() ) > 0 )
+  xSetNeighboursMvPredictor(LIST_0, B4x4Idx(0), B4x4Idx(3));
+  if((ascRefIdx[LIST_0] = m_cMv3D_A.minRefIdx(m_cMv3D_B).minRefIdx(m_cMv3D_C).getRef()) > 0)
   {
-    xGetMvPredictorUseNeighbours( acMvPred[LIST_0], ascRefIdx[LIST_0], MEDIAN );
+    xGetMvPredictorUseNeighbours(acMvPred[LIST_0], ascRefIdx[LIST_0], MEDIAN);
   }
-  xSetNeighboursMvPredictor(LIST_1, B4x4Idx(0), B4x4Idx(3) );
-  if( ( ascRefIdx[LIST_1] = m_cMv3D_A.minRefIdx( m_cMv3D_B ).minRefIdx( m_cMv3D_C ).getRef() ) > 0 )
+  xSetNeighboursMvPredictor(LIST_1, B4x4Idx(0), B4x4Idx(3));
+  if((ascRefIdx[LIST_1] = m_cMv3D_A.minRefIdx(m_cMv3D_B).minRefIdx(m_cMv3D_C).getRef()) > 0)
   {
-    xGetMvPredictorUseNeighbours( acMvPred[LIST_1], ascRefIdx[LIST_1], MEDIAN );
+    xGetMvPredictorUseNeighbours(acMvPred[LIST_1], ascRefIdx[LIST_1], MEDIAN);
   }
 
   //===== check reference indices =====
-  if( ascRefIdx[LIST_0] < 1 && ascRefIdx[LIST_1] < 1 )
+  if(ascRefIdx[LIST_0] < 1 && ascRefIdx[LIST_1] < 1)
   {
     ascRefIdx[LIST_0] = 1;
     ascRefIdx[LIST_1] = 1;
@@ -745,14 +745,14 @@ Bool MbDataAccess::xSpatialDirectMode( ParIdx8x8 eParIdx, Bool b8x8, RefFrameLis
   }
 
   //===== check co-located =====
-  if( ! bAllColNonZero )
+  if(! bAllColNonZero)
   {
     SChar   scRefIdxCol;
     Mv      acMvCol[4];
 
-    if( ! bAllColNonZero )
+    if(! bAllColNonZero)
     {
-      if( NULL != pcL0RefFrameList && NULL != pcL1RefFrameList )
+      if(NULL != pcL0RefFrameList && NULL != pcL1RefFrameList)
       {
         bAllColNonZero  = (*pcL1RefFrameList)[1]->isLongTerm();
       }
@@ -762,81 +762,81 @@ Bool MbDataAccess::xSpatialDirectMode( ParIdx8x8 eParIdx, Bool b8x8, RefFrameLis
       }
     }
 
-    if( ! bAllColNonZero )
+    if(! bAllColNonZero)
     {
-      if( b8x8 )
+      if(b8x8)
       {
-        SParIdx4x4 eSubMbPartIdx = ( eParIdx <= PART_8x8_1 ? ( eParIdx == PART_8x8_0 ? SPART_4x4_0 : SPART_4x4_1 )
-                                                           : ( eParIdx == PART_8x8_2 ? SPART_4x4_2 : SPART_4x4_3 ) );
+        SParIdx4x4 eSubMbPartIdx = (eParIdx <= PART_8x8_1 ? (eParIdx == PART_8x8_0 ? SPART_4x4_0 : SPART_4x4_1)
+                                                           : (eParIdx == PART_8x8_2 ? SPART_4x4_2 : SPART_4x4_3));
 
-        xGetColocatedMvRefIdx( acMvCol[0], scRefIdxCol, B4x4Idx( eParIdx + eSubMbPartIdx ) );
+        xGetColocatedMvRefIdx(acMvCol[0], scRefIdxCol, B4x4Idx(eParIdx + eSubMbPartIdx));
       }
       else
       {
         //===== THIS SHALL NEVER BE CALLED FOR INTERLACED SEQUENCES =====
-        xGetColocatedMvsRefIdxNonInterlaced( acMvCol, scRefIdxCol, eParIdx );
+        xGetColocatedMvsRefIdxNonInterlaced(acMvCol, scRefIdxCol, eParIdx);
       }
 
-      bAllColNonZero = ( scRefIdxCol != 1 );
+      bAllColNonZero = (scRefIdxCol != 1);
     }
 
-    if( ! bAllColNonZero )
+    if(! bAllColNonZero)
     {
-      bColZeroFlagBlk0   = ( acMvCol[0].getAbsHor() <= 1 && acMvCol[0].getAbsVer() <= 1 );
+      bColZeroFlagBlk0   = (acMvCol[0].getAbsHor() <= 1 && acMvCol[0].getAbsVer() <= 1);
 
-      if( ! b8x8 )
+      if(! b8x8)
       {
-        bColZeroFlagBlk1 = ( acMvCol[1].getAbsHor() <= 1 && acMvCol[1].getAbsVer() <= 1 );
-        bColZeroFlagBlk2 = ( acMvCol[2].getAbsHor() <= 1 && acMvCol[2].getAbsVer() <= 1 );
-        bColZeroFlagBlk3 = ( acMvCol[3].getAbsHor() <= 1 && acMvCol[3].getAbsVer() <= 1 );
+        bColZeroFlagBlk1 = (acMvCol[1].getAbsHor() <= 1 && acMvCol[1].getAbsVer() <= 1);
+        bColZeroFlagBlk2 = (acMvCol[2].getAbsHor() <= 1 && acMvCol[2].getAbsVer() <= 1);
+        bColZeroFlagBlk3 = (acMvCol[3].getAbsHor() <= 1 && acMvCol[3].getAbsVer() <= 1);
       }
     }
   }
 
   //===== set motion vectors and reference frames =====
-  for( uiLstIdx = 0; uiLstIdx < 2; uiLstIdx++ )
+  for(uiLstIdx = 0; uiLstIdx < 2; uiLstIdx++)
   {
-    ListIdx       eListIdx          = ListIdx( uiLstIdx );
-    MbMotionData& rcMbMotionDataLX  = getMbMotionData( eListIdx );
+    ListIdx       eListIdx          = ListIdx(uiLstIdx);
+    MbMotionData& rcMbMotionDataLX  = getMbMotionData(eListIdx);
     SChar         scRefIdx          = ascRefIdx[ eListIdx ];
     Bool          bZeroMv;
         Bool          bMvValid = true;
 
     //----- set motion vectors -----
-    if( b8x8 || bAllColNonZero || scRefIdx < 1 )
+    if(b8x8 || bAllColNonZero || scRefIdx < 1)
     {
-      bZeroMv         = ( bDirectZeroPred || scRefIdx < 1 || ( scRefIdx == 1 && bColZeroFlagBlk0 ) );
-      const Mv& rcMv  = ( bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ] );
-      rcMbMotionDataLX.setAllMv( rcMv, eParIdx );
-            bMvValid = xCheckMv( rcMv );
+      bZeroMv         = (bDirectZeroPred || scRefIdx < 1 || (scRefIdx == 1 && bColZeroFlagBlk0));
+      const Mv& rcMv  = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      rcMbMotionDataLX.setAllMv(rcMv, eParIdx);
+            bMvValid = xCheckMv(rcMv);
     }
     else
     {
-      bZeroMv         = ( scRefIdx == 1 && bColZeroFlagBlk0 );
-      const Mv& rcMv0 = ( bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ] );
-      rcMbMotionDataLX.setAllMv( rcMv0, eParIdx, SPART_4x4_0 );
-            bMvValid &= xCheckMv( rcMv0 );
+      bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk0);
+      const Mv& rcMv0 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      rcMbMotionDataLX.setAllMv(rcMv0, eParIdx, SPART_4x4_0);
+            bMvValid &= xCheckMv(rcMv0);
 
-      bZeroMv         = ( scRefIdx == 1 && bColZeroFlagBlk1 );
-      const Mv& rcMv1 = ( bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ] );
-      rcMbMotionDataLX.setAllMv( rcMv1, eParIdx, SPART_4x4_1 );
-            bMvValid &= xCheckMv( rcMv1 );
+      bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk1);
+      const Mv& rcMv1 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      rcMbMotionDataLX.setAllMv(rcMv1, eParIdx, SPART_4x4_1);
+            bMvValid &= xCheckMv(rcMv1);
 
-      bZeroMv         = ( scRefIdx == 1 && bColZeroFlagBlk2 );
-      const Mv& rcMv2 = ( bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ] );
-      rcMbMotionDataLX.setAllMv( rcMv2, eParIdx, SPART_4x4_2 );
-            bMvValid &= xCheckMv( rcMv2 );
+      bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk2);
+      const Mv& rcMv2 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      rcMbMotionDataLX.setAllMv(rcMv2, eParIdx, SPART_4x4_2);
+            bMvValid &= xCheckMv(rcMv2);
 
-      bZeroMv         = ( scRefIdx == 1 && bColZeroFlagBlk3 );
-      const Mv& rcMv3 = ( bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ] );
-      rcMbMotionDataLX.setAllMv( rcMv3, eParIdx, SPART_4x4_3 );
-            bMvValid &= xCheckMv( rcMv3 );
+      bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk3);
+      const Mv& rcMv3 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      rcMbMotionDataLX.setAllMv(rcMv3, eParIdx, SPART_4x4_3);
+            bMvValid &= xCheckMv(rcMv3);
     }
 
     //----- set reference indices and reference pictures -----
-    rcMbMotionDataLX.setRefIdx ( scRefIdx,  eParIdx );
+    rcMbMotionDataLX.setRefIdx (scRefIdx,  eParIdx);
 
-    if ( !bMvValid )
+    if (!bMvValid)
     {
       return false;
   }
@@ -845,108 +845,108 @@ Bool MbDataAccess::xSpatialDirectMode( ParIdx8x8 eParIdx, Bool b8x8, RefFrameLis
 }
 
 
-Bool MbDataAccess::xTemporalDirectModeMvRef( Mv acMv[], SChar ascRefIdx[], LumaIdx cIdx, Bool bFaultTolerant )
+Bool MbDataAccess::xTemporalDirectModeMvRef(Mv acMv[], SChar ascRefIdx[], LumaIdx cIdx, Bool bFaultTolerant)
 {
     SChar             scRefIdxCol;
     Mv                cMvCol;
-    const RefPicIdc&  rcRefPicCol = xGetColocatedMvRefPic( cMvCol, scRefIdxCol, cIdx );
+    const RefPicIdc&  rcRefPicCol = xGetColocatedMvRefPic(cMvCol, scRefIdxCol, cIdx);
 
     //----- get reference index for list 0 -----
-    if( scRefIdxCol > 0 )
+    if(scRefIdxCol > 0)
     {
-      if( rcRefPicCol.isValid() )
+      if(rcRefPicCol.isValid())
       {
         const Frame* pcFrame = rcRefPicCol.getPic();
-        AOF( pcFrame ); // something wrong
-        if( ( getMbPicType() == FRAME || pcFrame->getPicType() == FRAME ) && ( getMbPicType() != pcFrame->getPicType() ) )
+        AOF(pcFrame); // something wrong
+        if((getMbPicType() == FRAME || pcFrame->getPicType() == FRAME) && (getMbPicType() != pcFrame->getPicType()))
         {
-          pcFrame = pcFrame->getFrame()->getPic( getMbPicType() );
-          AOF( pcFrame );
+          pcFrame = pcFrame->getFrame()->getPic(getMbPicType());
+          AOF(pcFrame);
         }
-        RefFrameList& rcRefList = *m_rcSliceHeader.getRefFrameList( getMbPicType(), LIST_0 );
+        RefFrameList& rcRefList = *m_rcSliceHeader.getRefFrameList(getMbPicType(), LIST_0);
         SChar         scRefIdx  = BLOCK_NOT_AVAILABLE;
-        for( UInt uiIndex = 1; uiIndex <= rcRefList.getSize(); uiIndex++ )
+        for(UInt uiIndex = 1; uiIndex <= rcRefList.getSize(); uiIndex++)
         {
-          if( rcRefList[uiIndex] == pcFrame )
+          if(rcRefList[uiIndex] == pcFrame)
           {
             scRefIdx = uiIndex;
             break;
           }
         }
         ascRefIdx[LIST_0] = scRefIdx;
-        if( scRefIdx < 1 )
+        if(scRefIdx < 1)
         {
           AOT(1);
-          ROFRS( bFaultTolerant, false ); // not allowed
+          ROFRS(bFaultTolerant, false); // not allowed
           ascRefIdx[LIST_0] = 1;
         }
       }
       else
       {
         AOT(1);
-        ROFRS( bFaultTolerant, false ); // not allowed
+        ROFRS(bFaultTolerant, false); // not allowed
       }
     }
 
-    Int iScale = m_rcSliceHeader.getDistScaleFactor( getMbPicType(), ascRefIdx[LIST_0], ascRefIdx[LIST_1] );
-    if( iScale == 1024 )
+    Int iScale = m_rcSliceHeader.getDistScaleFactor(getMbPicType(), ascRefIdx[LIST_0], ascRefIdx[LIST_1]);
+    if(iScale == 1024)
     {
       acMv[LIST_0]  = cMvCol;
       acMv[LIST_1]  = Mv::ZeroMv();
     }
     else
     {
-      acMv[LIST_0]  = cMvCol.scaleMv( iScale );
+      acMv[LIST_0]  = cMvCol.scaleMv(iScale);
       acMv[LIST_1]  = acMv[LIST_0] - cMvCol;
     }
-    Bool   bMvValid = xCheckMv( acMv[LIST_0]);
+    Bool   bMvValid = xCheckMv(acMv[LIST_0]);
     return bMvValid;
 }
 
 
-Bool MbDataAccess::xTemporalDirectModeMvsRefNonInterlaced( Mv aacMv[][4], SChar ascRefIdx[], ParIdx8x8 eParIdx, Bool bFaultTolerant )
+Bool MbDataAccess::xTemporalDirectModeMvsRefNonInterlaced(Mv aacMv[][4], SChar ascRefIdx[], ParIdx8x8 eParIdx, Bool bFaultTolerant)
 {
     SChar             scRefIdxCol;
     Mv                acMvCol[4];
-    const RefPicIdc&  rcRefPicCol = xGetColocatedMvsRefPicNonInterlaced( acMvCol, scRefIdxCol, eParIdx );
+    const RefPicIdc&  rcRefPicCol = xGetColocatedMvsRefPicNonInterlaced(acMvCol, scRefIdxCol, eParIdx);
 
     //----- get reference index for list 0 -----
-    if( scRefIdxCol > 0 )
+    if(scRefIdxCol > 0)
     {
-        if( rcRefPicCol.isValid() )
+        if(rcRefPicCol.isValid())
         {
             const Frame* pcFrame = rcRefPicCol.getPic();
-            AOF( pcFrame );                         // something wrong
-            AOF( pcFrame->getPicType() == FRAME );  // something wrong
-            RefFrameList& rcRefList = *m_rcSliceHeader.getRefFrameList( getMbPicType(), LIST_0 );
+            AOF(pcFrame);                         // something wrong
+            AOF(pcFrame->getPicType() == FRAME);  // something wrong
+            RefFrameList& rcRefList = *m_rcSliceHeader.getRefFrameList(getMbPicType(), LIST_0);
             SChar scRefIdx  = BLOCK_NOT_AVAILABLE;
-            for( UInt uiIndex = 1; uiIndex <= rcRefList.getSize(); uiIndex++ )
+            for(UInt uiIndex = 1; uiIndex <= rcRefList.getSize(); uiIndex++)
             {
-                if( rcRefList[uiIndex] == pcFrame )
+                if(rcRefList[uiIndex] == pcFrame)
                 {
                     scRefIdx = uiIndex;
                     break;
                 }
             }
             ascRefIdx[LIST_0] = scRefIdx;
-            if( scRefIdx < 1 )
+            if(scRefIdx < 1)
             {
                 AOT(1);
-                ROFRS( bFaultTolerant, false ); // not allowed
+                ROFRS(bFaultTolerant, false); // not allowed
                 ascRefIdx[LIST_0] = 1;
             }
         }
         else
         {
             AOT(1);
-            ROFRS( bFaultTolerant, false ); // not allowed
+            ROFRS(bFaultTolerant, false); // not allowed
         }
     }
     Bool bMvValid = true;
-    Int iScale = m_rcSliceHeader.getDistScaleFactor     ( getMbPicType(), ascRefIdx[LIST_0], ascRefIdx[LIST_1] );
-    if( iScale == 1024 )
+    Int iScale = m_rcSliceHeader.getDistScaleFactor     (getMbPicType(), ascRefIdx[LIST_0], ascRefIdx[LIST_1]);
+    if(iScale == 1024)
     {
-        for( UInt uiIndex = 0; uiIndex < 4; uiIndex++ )
+        for(UInt uiIndex = 0; uiIndex < 4; uiIndex++)
         {
             aacMv[LIST_0][uiIndex] = acMvCol[uiIndex];
             aacMv[LIST_1][uiIndex] = Mv::ZeroMv();
@@ -954,18 +954,18 @@ Bool MbDataAccess::xTemporalDirectModeMvsRefNonInterlaced( Mv aacMv[][4], SChar 
     }
     else
     {
-        for( UInt uiIndex = 0; uiIndex < 4; uiIndex++ )
+        for(UInt uiIndex = 0; uiIndex < 4; uiIndex++)
         {
-            aacMv[LIST_0][uiIndex] = acMvCol[uiIndex].scaleMv( iScale );
+            aacMv[LIST_0][uiIndex] = acMvCol[uiIndex].scaleMv(iScale);
             aacMv[LIST_1][uiIndex] = aacMv[LIST_0][uiIndex] - acMvCol[uiIndex];
-            bMvValid &= xCheckMv( aacMv[LIST_0][uiIndex] );
+            bMvValid &= xCheckMv(aacMv[LIST_0][uiIndex]);
         }
     }
     return bMvValid;
 }
 
 
-Bool MbDataAccess::xTemporalDirectMode( ParIdx8x8 eParIdx, Bool b8x8, Bool bFaultTolerant )
+Bool MbDataAccess::xTemporalDirectMode(ParIdx8x8 eParIdx, Bool b8x8, Bool bFaultTolerant)
 {
     Bool bModeAllowed;
     SChar ascRefIdx[2] = {1, 1};
@@ -973,39 +973,39 @@ Bool MbDataAccess::xTemporalDirectMode( ParIdx8x8 eParIdx, Bool b8x8, Bool bFaul
     if(b8x8)
     {
         Mv acMv[2];
-        SParIdx4x4 eSubMbPartIdx = (eParIdx <= PART_8x8_1 ? ( eParIdx == PART_8x8_0 ? SPART_4x4_0 : SPART_4x4_1 )
-                                                          : ( eParIdx == PART_8x8_2 ? SPART_4x4_2 : SPART_4x4_3 ) );
-        B4x4Idx cIdx = B4x4Idx( eParIdx + eSubMbPartIdx );
+        SParIdx4x4 eSubMbPartIdx = (eParIdx <= PART_8x8_1 ? (eParIdx == PART_8x8_0 ? SPART_4x4_0 : SPART_4x4_1)
+                                                          : (eParIdx == PART_8x8_2 ? SPART_4x4_2 : SPART_4x4_3));
+        B4x4Idx cIdx = B4x4Idx(eParIdx + eSubMbPartIdx);
 
-        bModeAllowed = xTemporalDirectModeMvRef( acMv, ascRefIdx, cIdx, bFaultTolerant );
-        ROFRS( bModeAllowed, bModeAllowed );
-        for( UInt uiLstIdx = 0; uiLstIdx < 2; uiLstIdx++ )
+        bModeAllowed = xTemporalDirectModeMvRef(acMv, ascRefIdx, cIdx, bFaultTolerant);
+        ROFRS(bModeAllowed, bModeAllowed);
+        for(UInt uiLstIdx = 0; uiLstIdx < 2; uiLstIdx++)
         {
-            ListIdx       eListIdx          = ListIdx( uiLstIdx );
-            MbMotionData& rcMbMotionDataLX  = getMbMotionData( eListIdx );
-            rcMbMotionDataLX.setAllMv    ( acMv     [eListIdx], eParIdx );
-            rcMbMotionDataLX.setRefIdx   ( ascRefIdx[eListIdx], eParIdx );
+            ListIdx       eListIdx          = ListIdx(uiLstIdx);
+            MbMotionData& rcMbMotionDataLX  = getMbMotionData(eListIdx);
+            rcMbMotionDataLX.setAllMv    (acMv     [eListIdx], eParIdx);
+            rcMbMotionDataLX.setRefIdx   (ascRefIdx[eListIdx], eParIdx);
         }
     }
     else // do not do this for interlaced stuff
     {
         Mv aacMv[2][4];
-        bModeAllowed = xTemporalDirectModeMvsRefNonInterlaced( aacMv, ascRefIdx, eParIdx, bFaultTolerant );
-        ROFRS( bModeAllowed, bModeAllowed );
-        for( UInt uiLstIdx = 0; uiLstIdx < 2; uiLstIdx++ )
+        bModeAllowed = xTemporalDirectModeMvsRefNonInterlaced(aacMv, ascRefIdx, eParIdx, bFaultTolerant);
+        ROFRS(bModeAllowed, bModeAllowed);
+        for(UInt uiLstIdx = 0; uiLstIdx < 2; uiLstIdx++)
         {
-            ListIdx       eListIdx          = ListIdx( uiLstIdx );
-            MbMotionData& rcMbMotionDataLX  = getMbMotionData( eListIdx );
-            rcMbMotionDataLX.setAllMv     ( aacMv[eListIdx][0],  eParIdx, SPART_4x4_0 );
-            rcMbMotionDataLX.setAllMv     ( aacMv[eListIdx][1],  eParIdx, SPART_4x4_1 );
-            rcMbMotionDataLX.setAllMv     ( aacMv[eListIdx][2],  eParIdx, SPART_4x4_2 );
-            rcMbMotionDataLX.setAllMv     ( aacMv[eListIdx][3],  eParIdx, SPART_4x4_3 );
-            rcMbMotionDataLX.setRefIdx    ( ascRefIdx[eListIdx], eParIdx );
+            ListIdx       eListIdx          = ListIdx(uiLstIdx);
+            MbMotionData& rcMbMotionDataLX  = getMbMotionData(eListIdx);
+            rcMbMotionDataLX.setAllMv     (aacMv[eListIdx][0],  eParIdx, SPART_4x4_0);
+            rcMbMotionDataLX.setAllMv     (aacMv[eListIdx][1],  eParIdx, SPART_4x4_1);
+            rcMbMotionDataLX.setAllMv     (aacMv[eListIdx][2],  eParIdx, SPART_4x4_2);
+            rcMbMotionDataLX.setAllMv     (aacMv[eListIdx][3],  eParIdx, SPART_4x4_3);
+            rcMbMotionDataLX.setRefIdx    (ascRefIdx[eListIdx], eParIdx);
         }
     }
 
     return bModeAllowed;
 }
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 

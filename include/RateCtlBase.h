@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -51,92 +50,92 @@ static inline int iabs(int x)
 
 typedef enum
 {
-  FRAME_CODING,
-  FIELD_CODING,
-  ADAPTIVE_CODING
+    FRAME_CODING,
+    FIELD_CODING,
+    ADAPTIVE_CODING
 } CodingType;
 
 
 class jsvm_parameters {
 public:
-  float FrameRate;
-	float bit_rate;
+    float FrameRate;
+    float bit_rate;
 
-	int current_mb_nr;
-	int current_frame_number;
-	int successive_Bframe;
-	int jumpd;
-	int Frame_Total_Number_MB;
-	int basicunit;
-	int height;
-	int width;
-	int FrameSizeInMbs;
-	int PicInterlace;
-	int MbInterlace;
-	int channel_type;
-	int type;
-	int BasicUnit;
-	int frame_mbs_only_flag;
-	int intra_period;
-	int SetInitialQP;
-	int NumberofCodedMacroBlocks;
-  int qp;
-  int RCMaxQP;
-  int RCMinQP;
-  int RCUpdateMode;
-  int number;
-  int PicWidthInMbs;
-  int size;
-  int HierarchicalCoding;
-  int no_frames;
-  int CurrGopLevel;
-  int nal_reference_idc;
-  int HierarchicalLevels;
+    int current_mb_nr;
+    int current_frame_number;
+    int successive_Bframe;
+    int jumpd;
+    int Frame_Total_Number_MB;
+    int basicunit;
+    int height;
+    int width;
+    int FrameSizeInMbs;
+    int PicInterlace;
+    int MbInterlace;
+    int channel_type;
+    int type;
+    int BasicUnit;
+    int frame_mbs_only_flag;
+    int intra_period;
+    int SetInitialQP;
+    int NumberofCodedMacroBlocks;
+    int qp;
+    int RCMaxQP;
+    int RCMinQP;
+    int RCUpdateMode;
+    int number;
+    int PicWidthInMbs;
+    int size;
+    int HierarchicalCoding;
+    int no_frames;
+    int CurrGopLevel;
+    int nal_reference_idc;
+    int HierarchicalLevels;
 
-  unsigned int m_uiLayerId;
-  unsigned int m_uiIntraPeriod;
+    unsigned int m_uiLayerId;
+    unsigned int m_uiIntraPeriod;
 };
 
 class rc_generic {
 public:
-  // RC flags
-  int   m_iTopFieldFlag;
-  int   m_iFieldControl;
-  int   m_iFieldFrame;
-  int   m_iNoGranularFieldRC;
-  // bits stats
-  int   m_iNumberofHeaderBits;
-  int   m_iNumberofTextureBits;
-  int   m_iNumberofBasicUnitHeaderBits;
-  int   m_iNumberofBasicUnitTextureBits;
-  // frame stats
-  int   m_iNumberofGOP;
-  int   m_iNumberofCodedBFrame;
-  // MAD stats
-  Int64 m_i64TotalMADBasicUnit;
-  int   *m_piMADofMB;
-  // buffer and budget
-  Int64 m_i64CurrentBufferFullness; //LIZG 25/10/2002
-  int   m_iRemainingBits;
+    // RC flags
+    int   m_iTopFieldFlag;
+    int   m_iFieldControl;
+    int   m_iFieldFrame;
+    int   m_iNoGranularFieldRC;
+    // bits stats
+    int   m_iNumberofHeaderBits;
+    int   m_iNumberofTextureBits;
+    int   m_iNumberofBasicUnitHeaderBits;
+    int   m_iNumberofBasicUnitTextureBits;
+    // frame stats
+    int   m_iNumberofGOP;
+    int   m_iNumberofCodedBFrame;
+    // MAD stats
+    Int64 m_i64TotalMADBasicUnit;
+    int   *m_piMADofMB;
+    // buffer and budget
+    Int64 m_i64CurrentBufferFullness; //LIZG 25/10/2002
+    int   m_iRemainingBits;
 
-  int   m_iRCTextureBits;
-  int   m_iRCHeaderBits;
-  int   m_iRCTotalBits;
+    int   m_iRCTextureBits;
+    int   m_iRCHeaderBits;
+    int   m_iRCTotalBits;
 
-  jsvm_parameters *m_pcJSVMParams;
+    jsvm_parameters *m_pcJSVMParams;
 
-  rc_generic( jsvm_parameters *jsvm_params );
-  ~rc_generic( void );
+    rc_generic(jsvm_parameters *jsvm_params);
+    ~rc_generic(void);
 
-  int    Qstep2QP( double dQstep );
-  double QP2Qstep( int iQP );
-  double ComputeFrameMAD( void );
-  void   generic_alloc( void );
-  void   generic_free( void );
+    int    Qstep2QP (double dQstep);
+    double QP2Qstep (int iQP);
+    double ComputeFrameMAD (void);
+    void   generic_alloc (void);
+    void   generic_free (void);
 
-  void   update_rc( unsigned int currentMAD );
-  int    getCurrGopLevel( int frame_no );
-  void   adaptInitialQP( void );
+    void   update_rc (unsigned int currentMAD);
+    int    getCurrGopLevel (int frame_no);
+    void   adaptInitialQP (void);
 };
 
 #endif

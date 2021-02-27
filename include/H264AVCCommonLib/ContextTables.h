@@ -1,6 +1,5 @@
-
-#if !defined(AFX_CONTEXTTABLES_H__CBFE313E_2382_4ECC_9D41_416668E3507D__INCLUDED_)
-#define AFX_CONTEXTTABLES_H__CBFE313E_2382_4ECC_9D41_416668E3507D__INCLUDED_
+#ifndef _CONTEXTTABLES_H_
+#define _CONTEXTTABLES_H_
 
 #define NUM_ABT_MODE_CTX        3
 #define NUM_MB_TYPE_CTX        11
@@ -28,7 +27,7 @@
 #define CTX_UNUSED         {0,64}
 
 // h264 namepace begin
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 //                               0   1   2   3   4   5   6   7
 static const int type2ctx1[] = { 0,  1,  4,  5,  6,  4,  5,  6 };
@@ -68,8 +67,8 @@ static const Short INIT_MB_TYPE_P[3][3][11][2] =
   //----- model 0 -----
   {
     {  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED },
-  	{ {  23,  33} , {  23,   2} , {  21,   0} ,  CTX_UNUSED , {   1,   9} , {   0,  49} , { -37, 118} , {   5,  57} , { -13,  78} , { -11,  65} , {   1,  62} },
-  	{ {  26,  67} , {  16,  90} , {   9, 104} ,  CTX_UNUSED , { -46, 127} , { -20, 104} , {   1,  67} , {  18,  64} , {   9,  43} , {  29,   0} ,  CTX_UNUSED }
+    { {  23,  33} , {  23,   2} , {  21,   0} ,  CTX_UNUSED , {   1,   9} , {   0,  49} , { -37, 118} , {   5,  57} , { -13,  78} , { -11,  65} , {   1,  62} },
+    { {  26,  67} , {  16,  90} , {   9, 104} ,  CTX_UNUSED , { -46, 127} , { -20, 104} , {   1,  67} , {  18,  64} , {   9,  43} , {  29,   0} ,  CTX_UNUSED }
   },
   //----- model 1 -----
   {
@@ -81,7 +80,7 @@ static const Short INIT_MB_TYPE_P[3][3][11][2] =
   {
     {  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED ,  CTX_UNUSED },
     { {  29,  16} , {  25,   0} , {  14,   0} ,  CTX_UNUSED , { -10,  51} , {  -3,  62} , { -27,  99} , {  26,  16} , {  -4,  85} , { -24, 102} , {   5,  57} },
-  	{ {  54,   0} , {  37,  42} , {  12,  97} ,  CTX_UNUSED , { -32, 127} , { -22, 117} , {  -2,  74} , {  20,  40} , {  20,  10} , {  29,   0} ,  CTX_UNUSED }
+    { {  54,   0} , {  37,  42} , {  12,  97} ,  CTX_UNUSED , { -32, 127} , { -22, 117} , {  -2,  74} , {  20,  40} , {  20,  10} , {  29,   0} ,  CTX_UNUSED }
   }
 };
 
@@ -363,22 +362,22 @@ static const Short INIT_IPR_I[1][1][2][2] =
 {
   //----- model 0 -----
   {
-	  { { 13,  41} , {   3,  62} }
+    { { 13,  41} , {   3,  62} }
   }
 };
 static const Short INIT_IPR_P[3][1][2][2] =
 {
   //----- model 0 -----
   {
-	  { { 13,  41} , {   3,  62} }
+    { { 13,  41} , {   3,  62} }
   },
   //----- model 1 -----
   {
-	  { { 13,  41} , {   3,  62} }
+    { { 13,  41} , {   3,  62} }
   },
   //----- model 2 -----
   {
-	  { { 13,  41} , {   3,  62} }
+    { { 13,  41} , {   3,  62} }
   }
 };
 
@@ -743,8 +742,8 @@ static const Short INIT_TRANSFORM_SIZE_P[3][1][3][2]=
 
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
 
 
-#endif //!defined(AFX_CONTEXTTABLES_H__CBFE313E_2382_4ECC_9D41_416668E3507D__INCLUDED_)
+#endif // _CONTEXTTABLES_H_

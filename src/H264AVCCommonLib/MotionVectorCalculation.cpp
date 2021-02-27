@@ -4,12 +4,12 @@
 
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 MotionVectorCalculation::MotionVectorCalculation() :
-  m_uiMaxBw(0),
-  m_bSpatialDirectMode(false)
+    m_uiMaxBw(0),
+    m_bSpatialDirectMode(false)
 {
 }
 
@@ -18,10 +18,10 @@ MotionVectorCalculation::~MotionVectorCalculation()
 {
 }
 
-ErrVal MotionVectorCalculation::create( MotionVectorCalculation*& rpcMotionVectorCalculation )
+ErrVal MotionVectorCalculation::create(MotionVectorCalculation*& rpcMotionVectorCalculation)
 {
     rpcMotionVectorCalculation = new MotionVectorCalculation();
-    ROF( rpcMotionVectorCalculation );
+    ROF (rpcMotionVectorCalculation);
     return Err::m_nOK;
 }
 
@@ -31,7 +31,7 @@ ErrVal MotionVectorCalculation::destroy()
     return Err::m_nOK;
 }
 
-ErrVal MotionVectorCalculation::initSlice( const SliceHeader& rcSH )
+ErrVal MotionVectorCalculation::initSlice(const SliceHeader& rcSH)
 {
     m_bSpatialDirectMode  = rcSH.getDirectSpatialMvPredFlag();
     m_uiMaxBw             = rcSH.isBSlice() ? 2 : 1;
@@ -46,135 +46,135 @@ ErrVal MotionVectorCalculation::uninit()
 }
 
 
-Void MotionVectorCalculation::xCalc16x16( MbDataAccess& rcMbDataAccess,
-                                          MbDataAccess* pcMbDataAccessBase )
+Void MotionVectorCalculation::xCalc16x16 (MbDataAccess& rcMbDataAccess,
+                                          MbDataAccess* pcMbDataAccessBase)
 {
-    Mv    cMv;
+    Mv cMv;
     SChar scRefPic;
 
-    for( UInt uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+    for(UInt uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
     {
-        ListIdx       eListIdx        = ListIdx( uiBw );
-        MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-        MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+        ListIdx       eListIdx        = ListIdx(uiBw);
+        MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+        MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   (eListIdx);
 
-        if( 0 < (scRefPic = rcMbMotionData.getRefIdx() ) )
+        if(0 < (scRefPic = rcMbMotionData.getRefIdx()))
         {
-            if( rcMbMotionData.getMotPredFlag() )
+            if(rcMbMotionData.getMotPredFlag())
             {
-                AOF( pcMbDataAccessBase );
-                cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv();
+                AOF(pcMbDataAccessBase);
+                cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv();
             }
             else
             {
-                rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx );
+                rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx);
             }
             cMv += rcMbMvdData.getMv();
 
-            rcMbMotionData.setAllMv( cMv );
+            rcMbMotionData.setAllMv(cMv);
         }
     }
 }
 
 
-Void MotionVectorCalculation::xCalc16x8( MbDataAccess&  rcMbDataAccess,
-                                         MbDataAccess*  pcMbDataAccessBase )
+Void MotionVectorCalculation::xCalc16x8 (MbDataAccess&  rcMbDataAccess,
+                                         MbDataAccess*  pcMbDataAccessBase)
 {
     Mv cMv;
     SChar scRefPic;
 
-    for( UInt uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+    for(UInt uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
     {
-        ListIdx       eListIdx        = ListIdx( uiBw );
-        MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-        MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+        ListIdx       eListIdx        = ListIdx(uiBw);
+        MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+        MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   (eListIdx);
 
-        if( 0 < (scRefPic = rcMbMotionData.getRefIdx( PART_16x8_0 ) ) )
+        if(0 < (scRefPic = rcMbMotionData.getRefIdx(PART_16x8_0)))
         {
-            if( rcMbMotionData.getMotPredFlag( PART_16x8_0 ) )
+            if(rcMbMotionData.getMotPredFlag(PART_16x8_0))
             {
                 AOF(pcMbDataAccessBase);
-                cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( PART_16x8_0 );
+                cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(PART_16x8_0);
             }
             else
             {
-                rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, PART_16x8_0 );
+                rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, PART_16x8_0);
             }
-            cMv += rcMbMvdData.getMv( PART_16x8_0 );
+            cMv += rcMbMvdData.getMv(PART_16x8_0);
 
-            rcMbMotionData.setAllMv( cMv, PART_16x8_0 );
+            rcMbMotionData.setAllMv(cMv, PART_16x8_0);
         }
-        if( 0 < (scRefPic = rcMbMotionData.getRefIdx( PART_16x8_1 ) ) )
+        if(0 < (scRefPic = rcMbMotionData.getRefIdx(PART_16x8_1)))
         {
-            if( rcMbMotionData.getMotPredFlag( PART_16x8_1 ) )
+            if(rcMbMotionData.getMotPredFlag(PART_16x8_1))
             {
                 AOF(pcMbDataAccessBase);
-                cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( PART_16x8_1 );
+                cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(PART_16x8_1);
             }
             else
             {
-                rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, PART_16x8_1 );
+                rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, PART_16x8_1);
             }
-            cMv += rcMbMvdData.getMv( PART_16x8_1 );
+            cMv += rcMbMvdData.getMv(PART_16x8_1);
 
-            rcMbMotionData.setAllMv( cMv, PART_16x8_1 );
+            rcMbMotionData.setAllMv(cMv, PART_16x8_1);
         }
     }
 }
 
 
-Void MotionVectorCalculation::xCalc8x16( MbDataAccess&  rcMbDataAccess,
-                                         MbDataAccess*  pcMbDataAccessBase )
+Void MotionVectorCalculation::xCalc8x16 (MbDataAccess&  rcMbDataAccess,
+                                         MbDataAccess*  pcMbDataAccessBase)
 {
     Mv cMv;
     SChar scRefPic;
 
-    for( UInt uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+    for(UInt uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
     {
-        ListIdx       eListIdx        = ListIdx( uiBw );
-        MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-        MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+        ListIdx       eListIdx        = ListIdx(uiBw);
+        MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+        MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   (eListIdx);
 
-        if( 0 < (scRefPic = rcMbMotionData.getRefIdx( PART_8x16_0 ) ) )
+        if(0 < (scRefPic = rcMbMotionData.getRefIdx(PART_8x16_0)))
         {
-            if( rcMbMotionData.getMotPredFlag( PART_8x16_0 ) )
+            if(rcMbMotionData.getMotPredFlag(PART_8x16_0))
             {
                 AOF(pcMbDataAccessBase);
-                cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( PART_8x16_0 );
+                cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(PART_8x16_0);
             }
             else
             {
-                rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, PART_8x16_0 );
+                rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, PART_8x16_0);
             }
-            cMv += rcMbMvdData.getMv( PART_8x16_0 );
+            cMv += rcMbMvdData.getMv(PART_8x16_0);
 
-            rcMbMotionData.setAllMv( cMv, PART_8x16_0 );
+            rcMbMotionData.setAllMv(cMv, PART_8x16_0);
         }
 
-        if( 0 < (scRefPic = rcMbMotionData.getRefIdx(PART_8x16_1)))
+        if(0 < (scRefPic = rcMbMotionData.getRefIdx(PART_8x16_1)))
         {
             if(rcMbMotionData.getMotPredFlag(PART_8x16_1))
             {
                 AOF(pcMbDataAccessBase);
-                cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( PART_8x16_1 );
+                cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(PART_8x16_1);
             }
             else
             {
-                rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, PART_8x16_1 );
+                rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, PART_8x16_1);
             }
-            cMv += rcMbMvdData.getMv( PART_8x16_1 );
+            cMv += rcMbMvdData.getMv(PART_8x16_1);
 
-            rcMbMotionData.setAllMv( cMv, PART_8x16_1 );
+            rcMbMotionData.setAllMv(cMv, PART_8x16_1);
         }
     }
 }
 
 
 
-Void MotionVectorCalculation::xCalc8x8( B8x8Idx       c8x8Idx,
+Void MotionVectorCalculation::xCalc8x8 (B8x8Idx       c8x8Idx,
                                         MbDataAccess& rcMbDataAccess,
                                         MbDataAccess* pcMbDataAccessBase,
-                                        Bool          bFaultTolerant )
+                                        Bool          bFaultTolerant)
 {
     Mv    cMv;
     SChar scRefPic;
@@ -182,180 +182,180 @@ Void MotionVectorCalculation::xCalc8x8( B8x8Idx       c8x8Idx,
 
     ParIdx8x8 eParIdx = c8x8Idx.b8x8();
 
-    switch( rcMbDataAccess.getMbData().getBlkMode( c8x8Idx.b8x8Index() ) )
+    switch(rcMbDataAccess.getMbData().getBlkMode(c8x8Idx.b8x8Index()))
     {
         case BLK_SKIP:
         {
-            RefFrameList* pcL0  = rcMbDataAccess.getSH().getRefFrameList( rcMbDataAccess.getMbPicType(), LIST_0 );
-            RefFrameList* pcL1  = rcMbDataAccess.getSH().getRefFrameList( rcMbDataAccess.getMbPicType(), LIST_1 );
-            AOF( pcL0 && pcL1 );
-            if( rcMbDataAccess.getSH().isH264AVCCompatible() )
+            RefFrameList* pcL0  = rcMbDataAccess.getSH().getRefFrameList(rcMbDataAccess.getMbPicType(), LIST_0);
+            RefFrameList* pcL1  = rcMbDataAccess.getSH().getRefFrameList(rcMbDataAccess.getMbPicType(), LIST_1);
+            AOF(pcL0 && pcL1);
+            if(rcMbDataAccess.getSH().isH264AVCCompatible())
             {
                 Bool bOneMv;
-                AOF( rcMbDataAccess.getMvPredictorDirect( c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1 ) );
+                AOF(rcMbDataAccess.getMvPredictorDirect(c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1));
             }
             else
             {
-                ANOK( rcMbDataAccess.setSVCDirectModeMvAndRef( *pcL0, *pcL1, (Int)c8x8Idx.b8x8Index() ) );
+                ANOK(rcMbDataAccess.setSVCDirectModeMvAndRef(*pcL0, *pcL1, (Int)c8x8Idx.b8x8Index()));
             }
             break;
         }
         case BLK_8x8:
         {
-            for( uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+            for(uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
             {
-                ListIdx       eListIdx        = ListIdx( uiBw );
-                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+                ListIdx       eListIdx        = ListIdx(uiBw);
+                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData(eListIdx);
 
-                if( 0 < (scRefPic = rcMbMotionData.getRefIdx( eParIdx ) ) )
+                if(0 < (scRefPic = rcMbMotionData.getRefIdx(eParIdx)))
                 {
-                    if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                    if(rcMbMotionData.getMotPredFlag(eParIdx))
                     {
-                        AOF( pcMbDataAccessBase );
-                        cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx );
+                        AOF(pcMbDataAccessBase);
+                        cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx);
                     }
                     else
                     {
-                        rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx );
+                        rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx);
                     }
-                    cMv += rcMbMvdData.getMv( eParIdx );
-                    rcMbMotionData.setAllMv( cMv, eParIdx );
+                    cMv += rcMbMvdData.getMv(eParIdx);
+                    rcMbMotionData.setAllMv(cMv, eParIdx);
                 }
             }
             break;
         }
         case BLK_8x4:
         {
-            for( uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+            for(uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
             {
-                ListIdx       eListIdx        = ListIdx( uiBw );
-                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+                ListIdx       eListIdx        = ListIdx(uiBw);
+                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData(eListIdx);
 
-                if( 0 < (scRefPic = rcMbMotionData.getRefIdx( eParIdx ) ) )
+                if(0 < (scRefPic = rcMbMotionData.getRefIdx(eParIdx)))
                 {
-                    if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                    if(rcMbMotionData.getMotPredFlag(eParIdx))
                     {
-                        AOF( pcMbDataAccessBase );
-                        cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_8x4_0 );
+                        AOF(pcMbDataAccessBase);
+                        cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_8x4_0);
                     }
                     else
                     {
-                        rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_8x4_0 );
+                        rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_8x4_0);
                     }
-                    cMv +=  rcMbMvdData.getMv( eParIdx, SPART_8x4_0 );
-                    rcMbMotionData.setAllMv( cMv, eParIdx, SPART_8x4_0 );
+                    cMv +=  rcMbMvdData.getMv(eParIdx, SPART_8x4_0);
+                    rcMbMotionData.setAllMv(cMv, eParIdx, SPART_8x4_0);
 
-                    if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                    if(rcMbMotionData.getMotPredFlag(eParIdx))
                     {
-                        AOF( pcMbDataAccessBase );
-                        cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_8x4_1 );
+                        AOF(pcMbDataAccessBase);
+                        cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_8x4_1);
                     }
                     else
                     {
-                        rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_8x4_1 );
+                        rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_8x4_1);
                     }
-                    cMv += rcMbMvdData.getMv( eParIdx, SPART_8x4_1 );
-                    rcMbMotionData.setAllMv( cMv, eParIdx, SPART_8x4_1 );
+                    cMv += rcMbMvdData.getMv(eParIdx, SPART_8x4_1);
+                    rcMbMotionData.setAllMv(cMv, eParIdx, SPART_8x4_1);
                 }
             }
             break;
         }
         case BLK_4x8:
         {
-            for( uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+            for(uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
             {
-                ListIdx       eListIdx        = ListIdx( uiBw );
-                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+                ListIdx       eListIdx        = ListIdx(uiBw);
+                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData(eListIdx);
 
-                if( 0 < (scRefPic = rcMbMotionData.getRefIdx( eParIdx ) ) )
+                if(0 < (scRefPic = rcMbMotionData.getRefIdx(eParIdx)))
                 {
-                    if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                    if(rcMbMotionData.getMotPredFlag(eParIdx))
                     {
-                        AOF( pcMbDataAccessBase );
-                        cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_4x8_0 );
+                        AOF(pcMbDataAccessBase);
+                        cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_4x8_0);
                     }
                     else
                     {
-                        rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_4x8_0 );
+                        rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_4x8_0);
                     }
-                    cMv += rcMbMvdData.getMv( eParIdx, SPART_4x8_0 );
-                    rcMbMotionData.setAllMv( cMv, eParIdx, SPART_4x8_0 );
+                    cMv += rcMbMvdData.getMv(eParIdx, SPART_4x8_0);
+                    rcMbMotionData.setAllMv(cMv, eParIdx, SPART_4x8_0);
 
                     if(rcMbMotionData.getMotPredFlag(eParIdx))
                     {
-                        AOF( pcMbDataAccessBase );
-                        cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_4x8_1 );
+                        AOF(pcMbDataAccessBase);
+                        cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_4x8_1);
                     }
                     else
                     {
-                        rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_4x8_1 );
+                        rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_4x8_1);
                     }
-                    cMv += rcMbMvdData.getMv( eParIdx, SPART_4x8_1 );
-                    rcMbMotionData.setAllMv( cMv, eParIdx, SPART_4x8_1 );
+                    cMv += rcMbMvdData.getMv(eParIdx, SPART_4x8_1);
+                    rcMbMotionData.setAllMv(cMv, eParIdx, SPART_4x8_1);
                 }
             }
             break;
         }
         case BLK_4x4:
         {
-            for( uiBw = 0; uiBw < m_uiMaxBw; uiBw++ )
+            for(uiBw = 0; uiBw < m_uiMaxBw; uiBw++)
             {
-                ListIdx       eListIdx        = ListIdx( uiBw );
-                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData( eListIdx );
-                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   ( eListIdx );
+                ListIdx       eListIdx        = ListIdx(uiBw);
+                MbMotionData& rcMbMotionData  = rcMbDataAccess.getMbMotionData(eListIdx);
+                MbMvData&     rcMbMvdData     = rcMbDataAccess.getMbMvdData   (eListIdx);
 
-                if( 0 < (scRefPic = rcMbMotionData.getRefIdx( eParIdx ) ) )
+                if(0 < (scRefPic = rcMbMotionData.getRefIdx(eParIdx)))
                 {
-                  if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                  if(rcMbMotionData.getMotPredFlag(eParIdx))
                   {
-                    AOF( pcMbDataAccessBase );
-                    cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_4x4_0 );
+                      AOF(pcMbDataAccessBase);
+                      cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_4x4_0);
                   }
                   else
                   {
-                    rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_0 );
+                      rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_0);
                   }
-                  cMv +=  rcMbMvdData.getMv( eParIdx, SPART_4x4_0 );
-                  rcMbMotionData.setAllMv( cMv, eParIdx, SPART_4x4_0 );
+                  cMv +=  rcMbMvdData.getMv(eParIdx, SPART_4x4_0);
+                  rcMbMotionData.setAllMv(cMv, eParIdx, SPART_4x4_0);
 
-                  if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                  if(rcMbMotionData.getMotPredFlag(eParIdx))
                   {
-                    AOF( pcMbDataAccessBase );
-                    cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_4x4_1 );
+                      AOF(pcMbDataAccessBase);
+                      cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_4x4_1);
                   }
                   else
                   {
-                    rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_1 );
+                      rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_1);
                   }
-                  cMv +=  rcMbMvdData.getMv( eParIdx, SPART_4x4_1 );
-                  rcMbMotionData.setAllMv( cMv, eParIdx, SPART_4x4_1 );
+                  cMv += rcMbMvdData.getMv(eParIdx, SPART_4x4_1);
+                  rcMbMotionData.setAllMv(cMv, eParIdx, SPART_4x4_1);
 
-                  if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                  if(rcMbMotionData.getMotPredFlag(eParIdx))
                   {
-                    AOF( pcMbDataAccessBase );
-                    cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_4x4_2 );
+                      AOF(pcMbDataAccessBase);
+                      cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_4x4_2);
                   }
                   else
                   {
-                    rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_2 );
+                      rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_2);
                   }
-                  cMv +=  rcMbMvdData.getMv( eParIdx, SPART_4x4_2 );
-                  rcMbMotionData.setAllMv( cMv, eParIdx, SPART_4x4_2 );
+                  cMv += rcMbMvdData.getMv(eParIdx, SPART_4x4_2);
+                  rcMbMotionData.setAllMv(cMv, eParIdx, SPART_4x4_2);
 
-                  if( rcMbMotionData.getMotPredFlag( eParIdx ) )
+                  if(rcMbMotionData.getMotPredFlag(eParIdx))
                   {
-                    AOF( pcMbDataAccessBase );
-                    cMv = pcMbDataAccessBase->getMbMotionData( eListIdx ).getMv( eParIdx, SPART_4x4_3 );
+                      AOF(pcMbDataAccessBase);
+                      cMv = pcMbDataAccessBase->getMbMotionData(eListIdx).getMv(eParIdx, SPART_4x4_3);
                   }
                   else
                   {
-                    rcMbDataAccess.getMvPredictor( cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_3 );
+                      rcMbDataAccess.getMvPredictor(cMv, scRefPic, eListIdx, eParIdx, SPART_4x4_3);
                   }
-                  cMv +=  rcMbMvdData.getMv( eParIdx, SPART_4x4_3 );
-                  rcMbMotionData.setAllMv( cMv, eParIdx, SPART_4x4_3 );
+                  cMv +=  rcMbMvdData.getMv(eParIdx, SPART_4x4_3);
+                  rcMbMotionData.setAllMv(cMv, eParIdx, SPART_4x4_3);
                 }
             }
             break;
@@ -371,73 +371,77 @@ Void MotionVectorCalculation::xCalc8x8( B8x8Idx       c8x8Idx,
 
 
 
-Void MotionVectorCalculation::xCalc8x8( MbDataAccess& rcMbDataAccess,
-                                        MbDataAccess* pcMbDataAccessBase,
-                                        Bool bFaultTolerant )
+Void MotionVectorCalculation::xCalc8x8(MbDataAccess& rcMbDataAccess,
+                                       MbDataAccess* pcMbDataAccessBase,
+                                       Bool bFaultTolerant)
 {
-    for( B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++ )
+    for(B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++)
     {
-        xCalc8x8( c8x8Idx, rcMbDataAccess, pcMbDataAccessBase, bFaultTolerant );
+        xCalc8x8(c8x8Idx, rcMbDataAccess, pcMbDataAccessBase, bFaultTolerant);
     }
 }
 
-ErrVal MotionVectorCalculation::calcMvMb( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase )
+ErrVal MotionVectorCalculation::calcMvMb(MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase)
 {
-    switch( rcMbDataAccess.getMbData().getMbMode() )
+    switch(rcMbDataAccess.getMbData().getMbMode())
     {
-    case MODE_16x16:
-        xCalc16x16( rcMbDataAccess, pcMbDataAccessBase );
-        break;
-    case MODE_16x8:
-        xCalc16x8( rcMbDataAccess, pcMbDataAccessBase );
-        break;
-    case MODE_8x16:
-        xCalc8x16( rcMbDataAccess, pcMbDataAccessBase );
-        break;
-    case MODE_SKIP:
-        if( rcMbDataAccess.getSH().isBSlice() )
-        {
-            RefFrameList* pcL0  = rcMbDataAccess.getSH().getRefFrameList( rcMbDataAccess.getMbPicType(), LIST_0 );
-            RefFrameList* pcL1  = rcMbDataAccess.getSH().getRefFrameList( rcMbDataAccess.getMbPicType(), LIST_1 );
-            ROF(pcL0 && pcL1);
-            if(rcMbDataAccess.getSH().isH264AVCCompatible())
+        case MODE_16x16:
+            xCalc16x16(rcMbDataAccess, pcMbDataAccessBase);
+            break;
+        case MODE_16x8:
+            xCalc16x8(rcMbDataAccess, pcMbDataAccessBase);
+            break;
+        case MODE_8x16:
+            xCalc8x16(rcMbDataAccess, pcMbDataAccessBase);
+            break;
+        case MODE_SKIP:
+            if(rcMbDataAccess.getSH().isBSlice())
             {
-                B8x8Idx c8x8Idx;
-                Bool    bOneMv;
-                AOF( rcMbDataAccess.getMvPredictorDirect( c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1 ) ); c8x8Idx++;
-                AOF( rcMbDataAccess.getMvPredictorDirect( c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1 ) ); c8x8Idx++;
-                AOF( rcMbDataAccess.getMvPredictorDirect( c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1 ) ); c8x8Idx++;
-                AOF( rcMbDataAccess.getMvPredictorDirect( c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1 ) );
+                RefFrameList* pcL0  = rcMbDataAccess.getSH().getRefFrameList(rcMbDataAccess.getMbPicType(), LIST_0);
+                RefFrameList* pcL1  = rcMbDataAccess.getSH().getRefFrameList(rcMbDataAccess.getMbPicType(), LIST_1);
+                ROF(pcL0 && pcL1);
+                if(rcMbDataAccess.getSH().isH264AVCCompatible())
+                {
+                    B8x8Idx c8x8Idx;
+                    Bool    bOneMv;
+                    AOF(rcMbDataAccess.getMvPredictorDirect(c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1)); c8x8Idx++;
+                    AOF(rcMbDataAccess.getMvPredictorDirect(c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1)); c8x8Idx++;
+                    AOF(rcMbDataAccess.getMvPredictorDirect(c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1)); c8x8Idx++;
+                    AOF(rcMbDataAccess.getMvPredictorDirect(c8x8Idx.b8x8(), bOneMv, false, pcL0, pcL1));
+                }
+                else
+                {
+                    rcMbDataAccess.setSVCDirectModeMvAndRef(*pcL0, *pcL1);
+                }
             }
             else
             {
-                rcMbDataAccess.setSVCDirectModeMvAndRef(*pcL0, *pcL1);
+                Mv cMvSkip;
+                rcMbDataAccess.getMvPredictorSkipMode(cMvSkip);
+                rcMbDataAccess.getMbMotionData(LIST_0).setAllMv(cMvSkip);
             }
+            break;
+        case MODE_8x8:
+        case MODE_8x8ref0:
+            xCalc8x8(rcMbDataAccess, pcMbDataAccessBase, false);
+            break;
+        default:
+            break;
         }
-        else
-        {
-          Mv cMvSkip;
-          rcMbDataAccess.getMvPredictorSkipMode( cMvSkip );
-          rcMbDataAccess.getMbMotionData( LIST_0 ).setAllMv( cMvSkip );
-        }
-        break;
-    case MODE_8x8:
-    case MODE_8x8ref0:
-        xCalc8x8( rcMbDataAccess, pcMbDataAccessBase, false );
-        break;
-    default:
-        break;
-    }
     return Err::m_nOK;
 }
 
-ErrVal
-MotionVectorCalculation::calcMvSubMb( B8x8Idx c8x8Idx, MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase )
+ErrVal MotionVectorCalculation::calcMvSubMb (B8x8Idx c8x8Idx,
+                                             MbDataAccess& rcMbDataAccess,
+                                             MbDataAccess* pcMbDataAccessBase)
 {
-  xCalc8x8( c8x8Idx, rcMbDataAccess, pcMbDataAccessBase, false );
-  return Err::m_nOK;
+    xCalc8x8 (c8x8Idx,
+              rcMbDataAccess,
+              pcMbDataAccessBase,
+              false);
+    return Err::m_nOK;
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 

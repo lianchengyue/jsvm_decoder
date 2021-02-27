@@ -1,9 +1,3 @@
-
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by H264AVCCommonLib.rc
-//
-
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED

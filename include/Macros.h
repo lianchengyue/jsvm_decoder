@@ -1,14 +1,13 @@
-
-#ifndef __MSYS_MACROS_H_D64BE9B4_A8DA_11D3_AFE7_005004464B79
-#define __MSYS_MACROS_H_D64BE9B4_A8DA_11D3_AFE7_005004464B79
+#ifndef _MACROS_H_
+#define _MACROS_H_
 
 #if defined( _DEBUG ) || defined( DEBUG )
-  #if !defined( _DEBUG )
-    #define _DEBUG
-  #endif
-  #if !defined( DEBUG )
-    #define DEBUG
-  #endif
+    #if !defined( _DEBUG )
+      #define _DEBUG
+    #endif
+    #if !defined( DEBUG )
+      #define DEBUG
+    #endif
 #endif
 
 #if !defined( ASSERT )
@@ -230,18 +229,17 @@ return ERR_CLASS::m_nERR;     \
 
 
 #if defined( _DEBUG ) || defined( DEBUG )
-  #define CHECK( exp )      ASSERT( exp )
-  #define AOT_DBG( exp )    AOT( exp )
-  #define AOF_DBG( exp )    AOF( exp )
-  #define ANOK_DBG( exp )   ANOK( exp )
-  #define DO_DBG( exp )     ( exp )
+    #define CHECK( exp )      ASSERT( exp )
+    #define AOT_DBG( exp )    AOT( exp )
+    #define AOF_DBG( exp )    AOF( exp )
+    #define ANOK_DBG( exp )   ANOK( exp )
+    #define DO_DBG( exp )     ( exp )
 #else  // _DEBUG
-
-  #define CHECK( exp )      ((VOID_TYPE)( exp ))
-  #define AOT_DBG( exp )    ((VOID_TYPE)0)
-  #define AOF_DBG( exp )    ((VOID_TYPE)0)
-  #define ANOK_DBG( exp )   ((VOID_TYPE)0)
-  #define DO_DBG( exp )     ((VOID_TYPE)0)
+    #define CHECK( exp )      ((VOID_TYPE)( exp ))
+    #define AOT_DBG( exp )    ((VOID_TYPE)0)
+    #define AOF_DBG( exp )    ((VOID_TYPE)0)
+    #define ANOK_DBG( exp )   ((VOID_TYPE)0)
+    #define DO_DBG( exp )     ((VOID_TYPE)0)
 #endif // _DEBUG
 
-#endif //__MACROS_H_D64BE9B4_A8DA_11D3_AFE7_005004464B79
+#endif //_MACROS_H_

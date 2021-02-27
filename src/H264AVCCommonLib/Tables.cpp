@@ -1,9 +1,8 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/Tables.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 const UChar g_aucInvFrameScan[16] =
 {
@@ -328,5 +327,5 @@ const UChar g_aucScalingMatrixDefault8x8Inter[64] =
 
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 

@@ -1,15 +1,9 @@
+#ifndef _TRACEFILE_H_
+#define _TRACEFILE_H_
 
-#if !defined(AFX_TRACEFILE_H__B87E26CF_023E_4DC7_8F94_D3E38F59ABA1__INCLUDED_)
-#define AFX_TRACEFILE_H__B87E26CF_023E_4DC7_8F94_D3E38F59ABA1__INCLUDED_
+#include "Typedefs.h"
 
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-
-
-#define ENCODER_TRACE     0
+#define ENCODER_TRACE     1
 #define DECODER_TRACE     0
 
 #ifdef  SHARP_AVC_REWRITE_OUTPUT
@@ -24,121 +18,122 @@
 #define MAX_BITS_LENGTH   128
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
-class H264AVCCOMMONLIB_API TraceFile
+class TraceFile
 {
 protected:
-  class TraceDQId
-  {
-  public:
-    static ErrVal create  ( TraceDQId*& rpcTraceDQId,
-                            const Char* pucBaseName,
-                            UInt        uiDQIdplus1 );
-    ErrVal        destroy ();
-    ErrVal        output  ( const Char* pucLine );
-    ErrVal        storePos();
-    ErrVal        resetPos();
-  protected:
-    TraceDQId ( FILE* pFile );
-    ~TraceDQId();
-  private:
-    FILE*   m_pFile;
-    size_t  m_filePos;
-  };
+    class TraceDQId
+    {
+    public:
+        static ErrVal create (TraceDQId*& rpcTraceDQId,
+                              const Char* pucBaseName,
+                              UInt  uiDQIdplus1);
+        ErrVal  destroy();
+        ErrVal  output(const Char* pucLine);
+        ErrVal  storePos();
+        ErrVal  resetPos();
+    protected:
+        TraceDQId (FILE* pFile);
+        ~TraceDQId();
+    private:
+        FILE*  m_pFile;
+        size_t  m_filePos;
+    };
 
 public:
-	TraceFile         ();
+    TraceFile();
 	virtual ~TraceFile();
 
-  static ErrVal initTrace   ( const Char* pucBaseName );
-  static ErrVal uninitTrace ();
+    static ErrVal initTrace(const Char* pucBaseName);
+    static ErrVal uninitTrace();
 
-  static ErrVal disable     ();
-  static ErrVal enable      ();
-  static ErrVal storeFilePos();
-  static ErrVal resetFilePos();
+    static ErrVal disable();
+    static ErrVal enable();
+    static ErrVal storeFilePos();
+    static ErrVal resetFilePos();
 
-  static ErrVal setLayer    ( Int         iDQId );
-  static ErrVal startPicture();
-  static ErrVal startSlice  ();
-  static ErrVal startMb     ( UInt        uiMbAddress  );
-  static ErrVal printHeading( const Char* pcString,
-                              Bool        bReset );
+    static ErrVal setLayer(Int iDQId);
+    static ErrVal startPicture();
+    static ErrVal startSlice();
+    static ErrVal startMb(UInt uiMbAddress);
+    static ErrVal printHeading(const Char* pcString,  Bool bReset);
 
-  static ErrVal printPos    ();
-  static ErrVal countBits   ( UInt        uiBitCount );
-  static ErrVal printSCnt   ();
+    static ErrVal printPos();
+    static ErrVal countBits(UInt uiBitCount);
+    static ErrVal printSCnt();
 
-  static ErrVal addBits     ( UInt        uiVal,
-                              UInt        uiLength );
-  static ErrVal printCode   ( UInt        uiVal );
-  static ErrVal printCode   ( Int         iVal );
+    static ErrVal addBits(UInt uiVal,  UInt uiLength);
+    static ErrVal printCode (UInt uiVal);
+    static ErrVal printCode (Int iVal);
 
-  static ErrVal printString ( const Char* pcString );
-  static ErrVal printType   ( const Char* pcString);
-  static ErrVal printVal    ( UInt        uiVal );
-  static ErrVal printVal    ( Int         iVal );
-  static ErrVal printXVal   ( UInt        uiVal );
+    static ErrVal printString(const Char* pcString);
+    static ErrVal printType(const Char* pcString);
+    static ErrVal printVal(UInt uiVal);
+    static ErrVal printVal(Int iVal);
+    static ErrVal printXVal(UInt uiVal);
 
-  static ErrVal newLine     ();
+    static ErrVal newLine();
 
 protected:
-  static Bool         sm_bInit;
-  static Bool         sm_bDisable;
-  static const Char*  sm_pucBaseName;
-  static UInt         sm_uiDQIdplus3;
-  static TraceDQId*   sm_fTrace       [MAX_TRACE_LAYERS];
-  static UInt         sm_uiFrameNum   [MAX_TRACE_LAYERS];
-  static UInt         sm_uiSliceNum   [MAX_TRACE_LAYERS];
-  static UInt         sm_uiPosCounter [MAX_TRACE_LAYERS];
-  static UInt         sm_uiSymCounter [MAX_TRACE_LAYERS];
-  static UInt         sm_uiStorePosCnt[MAX_TRACE_LAYERS];
-  static UInt         sm_uiStoreSymCnt[MAX_TRACE_LAYERS];
-  static Char         sm_acLine       [MAX_TRACE_LAYERS][MAX_LINE_LENGTH];
-  static Char         sm_acType       [MAX_TRACE_LAYERS][16];
-  static Char         sm_acPos        [MAX_TRACE_LAYERS][16];
-  static Char         sm_acCode       [MAX_TRACE_LAYERS][16];
-  static Char         sm_acBits       [MAX_TRACE_LAYERS][MAX_BITS_LENGTH];
+    static Bool         sm_bInit;
+    static Bool         sm_bDisable;
+    static const Char*  sm_pucBaseName;
+    static UInt         sm_uiDQIdplus3;
+    static TraceDQId*   sm_fTrace[MAX_TRACE_LAYERS];
+    static UInt         sm_uiFrameNum[MAX_TRACE_LAYERS];
+    static UInt         sm_uiSliceNum[MAX_TRACE_LAYERS];
+    static UInt         sm_uiPosCounter[MAX_TRACE_LAYERS];
+    static UInt         sm_uiSymCounter[MAX_TRACE_LAYERS];
+    static UInt         sm_uiStorePosCnt[MAX_TRACE_LAYERS];
+    static UInt         sm_uiStoreSymCnt[MAX_TRACE_LAYERS];
+    static Char         sm_acLine[MAX_TRACE_LAYERS][MAX_LINE_LENGTH];
+    static Char         sm_acType[MAX_TRACE_LAYERS][16];
+    static Char         sm_acPos[MAX_TRACE_LAYERS][16];
+    static Char         sm_acCode[MAX_TRACE_LAYERS][16];
+    static Char         sm_acBits[MAX_TRACE_LAYERS][MAX_BITS_LENGTH];
 };
 
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
 
 
 
 #if ENCODER_TRACE
-  #define ETRACE_OFF       if( m_bTraceEnable ) TraceFile::disable     ()
-  #define ETRACE_ON        if( m_bTraceEnable ) TraceFile::enable      ()
+  #define ETRACE_OFF       if(m_bTraceEnable) TraceFile::disable     ()
+  #define ETRACE_ON        if(m_bTraceEnable) TraceFile::enable      ()
 
-  #define INIT_ETRACE      if( m_bTraceEnable ) TraceFile::initTrace   ("TraceEncoder")
-  #define UNINIT_ETRACE    if( m_bTraceEnable ) TraceFile::uninitTrace ()
-  #define ETRACE_STORE     if( m_bTraceEnable ) TraceFile::storeFilePos()
-  #define ETRACE_RESET     if( m_bTraceEnable ) TraceFile::resetFilePos()
+  #define INIT_ETRACE      if(m_bTraceEnable) TraceFile::initTrace   ("TraceEncoder")
+  #define UNINIT_ETRACE    if(m_bTraceEnable) TraceFile::uninitTrace ()
+  #define ETRACE_STORE     if(m_bTraceEnable) TraceFile::storeFilePos()
+  #define ETRACE_RESET     if(m_bTraceEnable) TraceFile::resetFilePos()
 
-  #define ETRACE_LAYER(x)  if( m_bTraceEnable ) TraceFile::setLayer    (x)
-  #define ETRACE_NEWPIC    if( m_bTraceEnable ) TraceFile::startPicture()
-  #define ETRACE_NEWSLICE  if( m_bTraceEnable ) TraceFile::startSlice  ()
-  #define ETRACE_NEWMB(x)  if( m_bTraceEnable ) TraceFile::startMb     (x)
-  #define ETRACE_HEADER(x)                      TraceFile::printHeading(x,true)
+  #define ETRACE_LAYER(x)  if(m_bTraceEnable) TraceFile::setLayer    (x)
+  #define ETRACE_NEWPIC    if(m_bTraceEnable) TraceFile::startPicture()
+  #define ETRACE_NEWSLICE  if(m_bTraceEnable) TraceFile::startSlice  ()
+  #define ETRACE_NEWMB(x)  if(m_bTraceEnable) TraceFile::startMb     (x)
+  #define ETRACE_HEADER(x)                    TraceFile::printHeading(x,true)
 
-  #define ETRACE_POS       if( m_bTraceEnable ) TraceFile::printPos    ()
-  #define ETRACE_COUNT(i)  if( m_bTraceEnable ) TraceFile::countBits   (i)
-  #define ETRACE_SC        if( m_bTraceEnable ) TraceFile::printSCnt   ()
+  #define ETRACE_POS       if(m_bTraceEnable) TraceFile::printPos    ()
+  #define ETRACE_COUNT(i)  if(m_bTraceEnable) TraceFile::countBits   (i)
+  #define ETRACE_SC        if(m_bTraceEnable) TraceFile::printSCnt   ()
 
-  #define ETRACE_BITS(v,l) if( m_bTraceEnable ) TraceFile::addBits     (v,l)
-  #define ETRACE_CODE(v)   if( m_bTraceEnable ) TraceFile::printCode   (v)
+  #define ETRACE_BITS(v,l) if(m_bTraceEnable) TraceFile::addBits     (v,l)
+  #define ETRACE_CODE(v)   if(m_bTraceEnable) TraceFile::printCode   (v)
 
-  #define ETRACE_TH(t)     if( m_bTraceEnable ) TraceFile::printString (t)
-  #define ETRACE_TY(t)     if( m_bTraceEnable ) TraceFile::printType   (t)
-  #define ETRACE_V(t)      if( m_bTraceEnable ) TraceFile::printVal    (t)
-  #define ETRACE_X(t)      if( m_bTraceEnable ) TraceFile::printXVal   (t)
+//ETRACE_TH:  @0     NAL unit header: forbidden_zero_bit
+  #define ETRACE_TH(t)     if(m_bTraceEnable) TraceFile::printString (t)
+//ETRACE_TY:  ue(v)
+  #define ETRACE_TY(t)     if(m_bTraceEnable) TraceFile::printType   (t)
+  #define ETRACE_V(t)      if(m_bTraceEnable) TraceFile::printVal    (t)
+  #define ETRACE_X(t)      if(m_bTraceEnable) TraceFile::printXVal   (t)
 
-  #define ETRACE_N         if( m_bTraceEnable ) TraceFile::newLine     ()
-  #define ETRACE_DO(x)     if( m_bTraceEnable ) x
+//:ETRACE_N: 输出/新起一行
+  #define ETRACE_N         if(m_bTraceEnable) TraceFile::newLine     ()
+  #define ETRACE_DO(x)     if(m_bTraceEnable) x
   #define ETRACE_DECLARE(x) x
  #else
 
@@ -229,4 +224,4 @@ H264AVC_NAMESPACE_END
   #define DTRACE_DO(x)
 #endif
 
-#endif // !defined(AFX_TRACEFILE_H__B87E26CF_023E_4DC7_8F94_D3E38F59ABA1__INCLUDED_)
+#endif //_TRACEFILE_H_

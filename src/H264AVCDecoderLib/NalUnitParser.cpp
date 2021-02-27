@@ -5,13 +5,13 @@
 #include "H264AVCCommonLib/TraceFile.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
-NalUnitParser::NalUnitParser()
-: m_bInitialized        ( false )
-, m_bNalUnitInitialized ( false )
-, m_pcBitReadBuffer     ( 0 )
+NalUnitParser::NalUnitParser() :
+    m_bInitialized        (false),
+    m_bNalUnitInitialized (false),
+    m_pcBitReadBuffer     (0)
 {
 }
 
@@ -19,28 +19,28 @@ NalUnitParser::~NalUnitParser()
 {
 }
 
-ErrVal NalUnitParser::create( NalUnitParser*& rpcNalUnitParser )
+ErrVal NalUnitParser::create(NalUnitParser*& rpcNalUnitParser)
 {
     rpcNalUnitParser = new NalUnitParser;
-    ROT( NULL == rpcNalUnitParser );
+    ROT(NULL == rpcNalUnitParser);
     return Err::m_nOK;
 }
 
 ErrVal NalUnitParser::destroy()
 {
-    ROT( m_bInitialized );
-    ROT( m_bNalUnitInitialized );
+    ROT(m_bInitialized);
+    ROT(m_bNalUnitInitialized);
     delete this;
     return Err::m_nOK;
 }
 
-ErrVal NalUnitParser::init( BitReadBuffer*       pcBitReadBuffer,
-                     HeaderSymbolReadIf*  pcHeaderSymbolReadIf )
+ErrVal NalUnitParser::init(BitReadBuffer*  pcBitReadBuffer,
+                           HeaderSymbolReadIf*  pcHeaderSymbolReadIf)
 {
-    ROT( m_bInitialized );
-    ROT( m_bNalUnitInitialized );
-    ROF( pcBitReadBuffer );
-    ROF( pcHeaderSymbolReadIf );
+    ROT(m_bInitialized);
+    ROT(m_bNalUnitInitialized);
+    ROF(pcBitReadBuffer);
+    ROF(pcHeaderSymbolReadIf);
     m_bInitialized          = true;
     m_bNalUnitInitialized   = false;
     m_pcBitReadBuffer       = pcBitReadBuffer;
@@ -50,8 +50,8 @@ ErrVal NalUnitParser::init( BitReadBuffer*       pcBitReadBuffer,
 
 ErrVal NalUnitParser::uninit()
 {
-    ROF( m_bInitialized );
-    ROT( m_bNalUnitInitialized );
+    ROF(m_bInitialized);
+    ROT(m_bNalUnitInitialized);
     m_bInitialized          = false;
     m_bNalUnitInitialized   = false;
     m_pcBitReadBuffer       = 0;
@@ -59,58 +59,60 @@ ErrVal NalUnitParser::uninit()
     return Err::m_nOK;
 }
 
-ErrVal NalUnitParser::initNalUnit( BinDataAccessor& rcBinDataAccessor, Int iDQId )
+ErrVal NalUnitParser::initNalUnit(BinDataAccessor& rcBinDataAccessor, Int iDQId)
 {
-    ROF( m_bInitialized );
-    ROT( m_bNalUnitInitialized );
-    ROF( rcBinDataAccessor.size() );
-    ROF( rcBinDataAccessor.data() );
+    ROF(m_bInitialized);
+    ROT(m_bNalUnitInitialized);
+    ROF(rcBinDataAccessor.size());
+    ROF(rcBinDataAccessor.data());
 
     //===== remove zeros at end =====
-    while( rcBinDataAccessor.size() > 1 && rcBinDataAccessor.data()[ rcBinDataAccessor.size() - 1 ] == 0 )
+    while(rcBinDataAccessor.size() > 1 && rcBinDataAccessor.data()[ rcBinDataAccessor.size() - 1 ] == 0)
     {
-        rcBinDataAccessor.decreaseEndPos( 1 );
+        rcBinDataAccessor.decreaseEndPos(1);
     }
 
     //===== determine NAL unit type =====
-    DTRACE_LAYER( iDQId == MSYS_INT_MIN ? 0 : iDQId );
+    DTRACE_LAYER(iDQId == MSYS_INT_MIN ? 0 : iDQId);
     UChar       ucFirstByte   = rcBinDataAccessor.data()[ 0 ];
-    NalUnitType eNalUnitType  = NalUnitType ( ucFirstByte & 0x1F );
+    NalUnitType eNalUnitType  = NalUnitType (ucFirstByte & 0x1F);
     Bool        bTrailingBits = true;
-    switch( eNalUnitType )
+
+    //Step N: 获取不同的NAL
+    switch(eNalUnitType)
     {
         case NAL_UNIT_SPS:
-            DTRACE_HEADER( "SEQUENCE PARAMETER SET" );
+            DTRACE_HEADER("SEQUENCE PARAMETER SET");
             break;
         case NAL_UNIT_SPS_EXTENSION:
-            DTRACE_HEADER( "SEQUENCE PARAMETER SET EXTENSION" );
+            DTRACE_HEADER("SEQUENCE PARAMETER SET EXTENSION");
             break;
         case NAL_UNIT_SUBSET_SPS:
-            DTRACE_HEADER( "SUBSET SEQUENCE PARAMETER SET" );
+            DTRACE_HEADER("SUBSET SEQUENCE PARAMETER SET");
             break;
         case NAL_UNIT_PPS:
-            DTRACE_HEADER( "PICTURE PARAMETER SET" );
+            DTRACE_HEADER("PICTURE PARAMETER SET");
             break;
         case NAL_UNIT_SEI:
-            DTRACE_HEADER( "SEI NAL UNIT" );
+            DTRACE_HEADER("SEI NAL UNIT");
             break;
         case NAL_UNIT_FILLER_DATA:
-            DTRACE_HEADER( "FILLER DATA" );
+            DTRACE_HEADER("FILLER DATA");
             break;
         case NAL_UNIT_ACCESS_UNIT_DELIMITER:
-            DTRACE_HEADER( "ACCESS UNIT DELIMITER" );
+            DTRACE_HEADER("ACCESS UNIT DELIMITER");
             break;
         case NAL_UNIT_END_OF_SEQUENCE:
-            DTRACE_HEADER( "END OF SEQUENCE" );
+            DTRACE_HEADER("END OF SEQUENCE");
             bTrailingBits = false;
             break;
         case NAL_UNIT_END_OF_STREAM:
-            DTRACE_HEADER( "END OF STREAM" );
+            DTRACE_HEADER("END OF STREAM");
             bTrailingBits = false;
             break;
         case NAL_UNIT_PREFIX:
-            DTRACE_HEADER( "PREFIX UNIT" );
-            bTrailingBits = ( rcBinDataAccessor.size() > 4 );
+            DTRACE_HEADER("PREFIX UNIT");
+            bTrailingBits = (rcBinDataAccessor.size() > 4);
             break;
         case NAL_UNIT_CODED_SLICE:
         case NAL_UNIT_CODED_SLICE_DATAPART_A:
@@ -127,53 +129,52 @@ ErrVal NalUnitParser::initNalUnit( BinDataAccessor& rcBinDataAccessor, Int iDQId
         case NAL_UNIT_RESERVED_21:
         case NAL_UNIT_RESERVED_22:
         case NAL_UNIT_RESERVED_23:
-            DTRACE_HEADER( "RESERVED" );
+            DTRACE_HEADER("RESERVED");
             bTrailingBits = false;
             break;
         default:
-            DTRACE_HEADER( "UNSPECIFIED" );
+            DTRACE_HEADER("UNSPECIFIED");
             bTrailingBits = false;
             break;
     }
 
     //===== init bit read buffer and read NAL unit header =====
-    xInitSODB( rcBinDataAccessor, bTrailingBits);
-    NalUnitHeader::read( *m_pcHeaderSymbolReadIf);
+    xInitSODB(rcBinDataAccessor, bTrailingBits);
+    NalUnitHeader::read(*m_pcHeaderSymbolReadIf);
     m_bNalUnitInitialized = true;
 
     return Err::m_nOK;
 }
 
-ErrVal
-NalUnitParser::closeNalUnit( Bool bCheckEndOfNalUnit )
+ErrVal NalUnitParser::closeNalUnit(Bool bCheckEndOfNalUnit)
 {
-  ROF( m_bInitialized );
-  ROF( m_bNalUnitInitialized );
-  ROT( bCheckEndOfNalUnit && m_pcBitReadBuffer->isValid() );
-  m_bNalUnitInitialized = false;
-  return Err::m_nOK;
+    ROF(m_bInitialized);
+    ROF(m_bNalUnitInitialized);
+    ROT(bCheckEndOfNalUnit && m_pcBitReadBuffer->isValid());
+    m_bNalUnitInitialized = false;
+    return Err::m_nOK;
 }
 
-ErrVal NalUnitParser::xInitSODB( BinDataAccessor&  rcBinDataAccessor,
-                          Bool              bTrailingBits )
+ErrVal NalUnitParser::xInitSODB(BinDataAccessor&  rcBinDataAccessor,
+                                Bool  bTrailingBits)
 {
     UChar*  pucBuffer       = rcBinDataAccessor.data();
     UInt    uiRBSPSize      = 0;
     UInt    uiBitsInPacket  = 0;
 
     //===== convert payload to RBSP =====
-    for( UInt uiNumZeros = 0, uiReadOffset = 0; uiReadOffset < rcBinDataAccessor.size(); uiReadOffset++ )
+    for(UInt uiNumZeros = 0, uiReadOffset = 0; uiReadOffset < rcBinDataAccessor.size(); uiReadOffset++)
     {
-        if( uiNumZeros == 2 && pucBuffer[ uiReadOffset ] == 0x03 )
+        if(uiNumZeros == 2 && pucBuffer[ uiReadOffset ] == 0x03)
         {
             uiReadOffset++;
             uiNumZeros = 0;
         }
-        if( uiReadOffset < rcBinDataAccessor.size() )
+        if(uiReadOffset < rcBinDataAccessor.size())
         {
             pucBuffer[ uiRBSPSize++ ] = pucBuffer[ uiReadOffset ];
 
-            if( pucBuffer[ uiReadOffset] == 0x00 )
+            if(pucBuffer[ uiReadOffset] == 0x00)
             {
                 uiNumZeros++;
             }
@@ -185,29 +186,29 @@ ErrVal NalUnitParser::xInitSODB( BinDataAccessor&  rcBinDataAccessor,
     }
 
     //===== determine bits in NAL unit except trailing bits =====
-    uiBitsInPacket      = ( uiRBSPSize << 3 );
+    uiBitsInPacket = (uiRBSPSize << 3);
     UInt  uiLastBytePos = uiRBSPSize - 1;
 
     //----- remove zero bytes at the end -----
     {
-      while( pucBuffer[ uiLastBytePos ] == 0x00 )
-      {
-          uiLastBytePos --;
-      }
-      uiBitsInPacket  -= ( ( uiRBSPSize - uiLastBytePos - 1 ) << 3 );
+        while(pucBuffer[uiLastBytePos] == 0x00)
+        {
+            uiLastBytePos --;
+        }
+        uiBitsInPacket  -= ((uiRBSPSize - uiLastBytePos - 1) << 3);
     }
 
     //----- remove trailing bits -----
-    if( bTrailingBits )
+    if(bTrailingBits)
     {
-      UChar ucLastByte    = pucBuffer[ uiLastBytePos ];
-      UInt  uiNumZeroBits = 0;
-      while( ( ucLastByte & 0x01 ) == 0x00 )
-      {
-          ucLastByte    >>= 1;
-          uiNumZeroBits ++;
-      }
-      uiBitsInPacket  -= uiNumZeroBits;
+        UChar ucLastByte    = pucBuffer[ uiLastBytePos ];
+        UInt  uiNumZeroBits = 0;
+        while((ucLastByte & 0x01) == 0x00)
+        {
+            ucLastByte    >>= 1;
+            uiNumZeroBits ++;
+        }
+        uiBitsInPacket  -= uiNumZeroBits;
     }
 
     //===== init bit read buffer =====
@@ -217,4 +218,4 @@ ErrVal NalUnitParser::xInitSODB( BinDataAccessor&  rcBinDataAccessor,
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

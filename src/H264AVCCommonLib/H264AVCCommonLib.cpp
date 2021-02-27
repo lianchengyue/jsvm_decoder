@@ -10,6 +10,6 @@ const ErrVal Err::m_nInvalidParameter =  (-5);
 const ErrVal Err::m_nDataNotAvailable =  (-6);
 
 
-H264AVC_NAMESPACE_BEGIN
-H264AVC_NAMESPACE_END
+namespace JSVM {
+}  //namespace JSVM {
 

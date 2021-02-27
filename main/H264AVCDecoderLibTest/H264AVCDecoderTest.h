@@ -1,6 +1,5 @@
-
-#ifndef __H264AVCDECODERTEST_H_D65BE9B4_A8DA_11D3_AFE7_005004464B79
-#define __H264AVCDECODERTEST_H_D65BE9B4_A8DA_11D3_AFE7_005004464B79
+#ifndef _H264AVCDECODERTEST_H_
+#define _H264AVCDECODERTEST_H_
 
 
 #include <algorithm>
@@ -25,7 +24,7 @@ private:
     BufferParameters();
     virtual ~BufferParameters();
 
-    ErrVal      init( const h264::AccessUnit& rcAccessUnit );
+    ErrVal      init(const JSVM::AccessUnit& rcAccessUnit);
 
     UInt        getLumaOffset ()  const { return m_uiLumaOffset; }
     UInt        getCbOffset   ()  const { return m_uiCbOffset; }
@@ -52,33 +51,33 @@ protected:
   virtual ~H264AVCDecoderTest();
 
 public:
-  static ErrVal create  ( H264AVCDecoderTest*&  rpcH264AVCDecoderTest );
+  static ErrVal create  (H264AVCDecoderTest*&  rpcH264AVCDecoderTest);
   ErrVal        destroy ();
-  ErrVal        init    ( DecoderParameter*     pcDecoderParameter,
-                          ReadBitstreamIf*      pcReadBitStream,
+  ErrVal        init    (DecoderParameter*     pcDecoderParameter,
+                         ReadBitstreamIf*      pcReadBitStream,
 #ifdef SHARP_AVC_REWRITE_OUTPUT
-                          WriteBitstreamIf*     pcWriteBitstream );
+                         WriteBitstreamIf*     pcWriteBitstream);
 #else
-                          WriteYuvIf*           pcWriteYuv );
+                         WriteYuvIf*           pcWriteYuv);
 #endif
   ErrVal        uninit  ();
   ErrVal        go      ();
 
 private:
-  ErrVal  xProcessAccessUnit( h264::AccessUnit& rcAccessUnit,
-                              Bool&             rbFirstAccessUnit,
-                              UInt&             ruiNumProcessed );
-  ErrVal  xGetNewPicBuffer  ( PicBuffer*&       rpcPicBuffer,
-                              UInt              uiSize );
-  ErrVal  xOutputNALUnits   ( BinDataList&      rcBinDataList,
-                              UInt&             ruiNumNALUnits );
-  ErrVal  xOutputPicBuffer  ( PicBufferList&    rcPicBufferOutputList,
-                              UInt&             ruiNumFrames );
-  ErrVal  xRemovePicBuffer  ( PicBufferList&    rcPicBufferUnusedList );
+  ErrVal  xProcessAccessUnit(JSVM::AccessUnit& rcAccessUnit,
+                             Bool&             rbFirstAccessUnit,
+                             UInt&             ruiNumProcessed);
+  ErrVal  xGetNewPicBuffer  (PicBuffer*&       rpcPicBuffer,
+                             UInt              uiSize);
+  ErrVal  xOutputNALUnits   (BinDataList&      rcBinDataList,
+                             UInt&             ruiNumNALUnits);
+  ErrVal  xOutputPicBuffer  (PicBufferList&    rcPicBufferOutputList,
+                             UInt&             ruiNumFrames);
+  ErrVal  xRemovePicBuffer  (PicBufferList&    rcPicBufferUnusedList);
 
 private:
   Bool                          m_bInitialized;
-  h264::CreaterH264AVCDecoder*  m_pcH264AVCDecoder;
+  JSVM::CreaterH264AVCDecoder*  m_pcH264AVCDecoder;
   DecoderParameter*             m_pcParameter;
   ReadBitstreamIf*              m_pcReadBitstream;
 #ifdef SHARP_AVC_REWRITE_OUTPUT
@@ -100,4 +99,4 @@ private:
 #endif
 };
 
-#endif //__H264AVCDECODERTEST_H_D65BE9B4_A8DA_11D3_AFE7_005004464B79
+#endif //_H264AVCDECODERTEST_H_

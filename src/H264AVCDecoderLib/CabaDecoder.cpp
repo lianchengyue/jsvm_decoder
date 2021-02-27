@@ -1,4 +1,3 @@
-
 #include "H264AVCDecoderLib.h"
 #include "H264AVCCommonLib/CabacTables.h"
 #include "H264AVCCommonLib/TraceFile.h"
@@ -8,15 +7,15 @@
 #include "DecError.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
-CabaDecoder::CabaDecoder()
-: m_pcBitReadBuffer ( 0 )
-, m_uiRange         ( 0 )
-, m_uiValue         ( 0 )
-, m_uiWord          ( 0 )
-, m_uiBitsLeft      ( 0 )
+CabaDecoder::CabaDecoder() :
+    m_pcBitReadBuffer (0),
+    m_uiRange         (0),
+    m_uiValue         (0),
+    m_uiWord          (0),
+    m_uiBitsLeft      (0)
 {
 }
 
@@ -24,25 +23,25 @@ CabaDecoder::~CabaDecoder()
 {
 }
 
-ErrVal CabaDecoder::init( BitReadBuffer* pcBitReadBuffer )
+ErrVal CabaDecoder::init(BitReadBuffer* pcBitReadBuffer)
 {
-  ROF( pcBitReadBuffer )
-  m_pcBitReadBuffer = pcBitReadBuffer;
-  return Err::m_nOK;
+    ROF(pcBitReadBuffer)
+    m_pcBitReadBuffer = pcBitReadBuffer;
+    return Err::m_nOK;
 }
 
-__inline ErrVal CabaDecoder::xReadBit( UInt& ruiValue )
+__inline ErrVal CabaDecoder::xReadBit(UInt& ruiValue)
 {
-  if( 0 == m_uiBitsLeft-- )
-  {
-    RNOKS( m_pcBitReadBuffer->get( m_uiWord, 8 ) );
+    if(0 == m_uiBitsLeft--)
+    {
+        RNOKS(m_pcBitReadBuffer->get(m_uiWord, 8));
 
-    m_uiBitsLeft = 7;
-  }
-  ruiValue += ruiValue + ((m_uiWord >> 7)&1);
-  m_uiWord <<= 1;
+        m_uiBitsLeft = 7;
+    }
+    ruiValue += ruiValue + ((m_uiWord >> 7)&1);
+    m_uiWord <<= 1;
 
-  return Err::m_nOK;
+    return Err::m_nOK;
 }
 
 ErrVal CabaDecoder::finish()
@@ -57,13 +56,13 @@ ErrVal CabaDecoder::start()
     m_uiWord      = 0;
     m_uiBitsLeft  = 0;
 
-    m_pcBitReadBuffer->flush( m_pcBitReadBuffer->getBitsUntilByteAligned());
+    m_pcBitReadBuffer->flush(m_pcBitReadBuffer->getBitsUntilByteAligned());
     m_pcBitReadBuffer->setModeCabac();
 
-    while( ! m_pcBitReadBuffer->isWordAligned() && ( 8 > m_uiBitsLeft) )
+    while(!m_pcBitReadBuffer->isWordAligned() && (8 > m_uiBitsLeft))
     {
         UInt uiByte;
-        m_pcBitReadBuffer->get( uiByte, 8 );
+        m_pcBitReadBuffer->get(uiByte, 8);
         m_uiWord <<= 8;
         m_uiWord += uiByte;
         m_uiBitsLeft += 8;
@@ -71,15 +70,15 @@ ErrVal CabaDecoder::start()
 
     m_uiWord <<= 8-m_uiBitsLeft;
 
-    for( UInt n = 0; n < B_BITS-1; n++ )
+    for(UInt n = 0; n < B_BITS-1; n++)
     {
-        RNOKS( xReadBit( m_uiValue ) );
+        RNOKS(xReadBit(m_uiValue));
     }
 
     return Err::m_nOK;
 }
 
-ErrVal CabaDecoder::getTerminateBufferBit( UInt& ruiBit )
+ErrVal CabaDecoder::getTerminateBufferBit(UInt& ruiBit)
 {
     UInt uiRange = m_uiRange-2;
     UInt uiValue = m_uiValue;
@@ -88,7 +87,7 @@ ErrVal CabaDecoder::getTerminateBufferBit( UInt& ruiBit )
     DTRACE_TH("  ");
     DTRACE_X (m_uiRange);
 
-    if( uiValue >= uiRange )
+    if(uiValue >= uiRange)
     {
         ruiBit = 1;
     }
@@ -96,10 +95,10 @@ ErrVal CabaDecoder::getTerminateBufferBit( UInt& ruiBit )
     {
         ruiBit = 0;
 
-        while( uiRange < QUARTER )
+        while(uiRange < QUARTER)
         {
             uiRange += uiRange;
-            RNOKS( xReadBit( uiValue ) );
+            RNOKS(xReadBit(uiValue));
         }
 
         m_uiRange = uiRange;
@@ -120,7 +119,7 @@ ErrVal CabaDecoder::uninit()
     return Err::m_nOK;
 }
 
-ErrVal CabaDecoder::getSymbol( UInt& ruiSymbol, CabacContextModel& rcCCModel )
+ErrVal CabaDecoder::getSymbol(UInt& ruiSymbol, CabacContextModel& rcCCModel)
 {
     UInt uiRange = m_uiRange;
     UInt uiValue = m_uiValue;
@@ -139,10 +138,10 @@ ErrVal CabaDecoder::getSymbol( UInt& ruiSymbol, CabacContextModel& rcCCModel )
         uiLPS = g_aucLPSTable64x4[rcCCModel.getState()][(uiRange>>6) & 0x03];
         uiRange -= uiLPS;
 
-        if( uiValue < uiRange )
+        if(uiValue < uiRange)
         {
             ruiSymbol = rcCCModel.getMps();
-            rcCCModel.setState( g_aucACNextStateMPS64[ rcCCModel.getState() ] );
+            rcCCModel.setState(g_aucACNextStateMPS64[rcCCModel.getState()]);
         }
         else
         {
@@ -151,12 +150,12 @@ ErrVal CabaDecoder::getSymbol( UInt& ruiSymbol, CabacContextModel& rcCCModel )
 
             ruiSymbol = 1 - rcCCModel.getMps();
 
-            if( ! rcCCModel.getState() )
+            if(!rcCCModel.getState())
             {
                 rcCCModel.toggleMps();
             }
 
-            rcCCModel.setState( g_aucACNextStateLPS64[ rcCCModel.getState() ] );
+            rcCCModel.setState(g_aucACNextStateLPS64[rcCCModel.getState()]);
         }
     }
 
@@ -164,10 +163,10 @@ ErrVal CabaDecoder::getSymbol( UInt& ruiSymbol, CabacContextModel& rcCCModel )
     DTRACE_V (ruiSymbol);
     DTRACE_N;
 
-    while( uiRange < QUARTER )
+    while(uiRange < QUARTER)
     {
         uiRange += uiRange;
-        RNOKS( xReadBit( uiValue ) );
+        RNOKS(xReadBit(uiValue));
     }
 
     m_uiRange = uiRange;
@@ -177,7 +176,7 @@ ErrVal CabaDecoder::getSymbol( UInt& ruiSymbol, CabacContextModel& rcCCModel )
 }
 
 
-ErrVal CabaDecoder::getEpSymbol( UInt& ruiSymbol )
+ErrVal CabaDecoder::getEpSymbol(UInt& ruiSymbol)
 {
     DTRACE_SC;
     DTRACE_TH ("  ");
@@ -185,16 +184,16 @@ ErrVal CabaDecoder::getEpSymbol( UInt& ruiSymbol )
 
     UInt uiValue = m_uiValue;
 
-    RNOKS( xReadBit( uiValue ) );
+    RNOKS(xReadBit(uiValue));
 
-    if( uiValue >= m_uiRange )
+    if(uiValue >= m_uiRange)
     {
-      ruiSymbol = 1;
-      uiValue -= m_uiRange;
+        ruiSymbol = 1;
+        uiValue -= m_uiRange;
     }
     else
     {
-      ruiSymbol = 0;
+        ruiSymbol = 0;
     }
 
     DTRACE_TH ("  -  ");
@@ -207,7 +206,7 @@ ErrVal CabaDecoder::getEpSymbol( UInt& ruiSymbol )
 }
 
 
-ErrVal CabaDecoder::getExGolombLevel( UInt& ruiSymbol, CabacContextModel& rcCCModel  )
+ErrVal CabaDecoder::getExGolombLevel(UInt& ruiSymbol, CabacContextModel& rcCCModel)
 {
   UInt uiSymbol;
   UInt uiCount = 0;
@@ -216,11 +215,11 @@ ErrVal CabaDecoder::getExGolombLevel( UInt& ruiSymbol, CabacContextModel& rcCCMo
       getSymbol(uiSymbol, rcCCModel);
       uiCount++;
   }
-  while( uiSymbol && (uiCount != 13));
+  while(uiSymbol && (uiCount != 13));
 
   ruiSymbol = uiCount-1;
 
-  if( uiSymbol )
+  if(uiSymbol)
   {
       getEpExGolomb(uiSymbol, 0);
       ruiSymbol += uiSymbol+1;
@@ -230,33 +229,35 @@ ErrVal CabaDecoder::getExGolombLevel( UInt& ruiSymbol, CabacContextModel& rcCCMo
 }
 
 
-ErrVal CabaDecoder::getExGolombMvd( UInt& ruiSymbol, CabacContextModel* pcCCModel, UInt uiMaxBin )
+ErrVal CabaDecoder::getExGolombMvd(UInt& ruiSymbol,
+                                   CabacContextModel* pcCCModel,
+                                   UInt uiMaxBin)
 {
     UInt uiSymbol;
 
     getSymbol(ruiSymbol, pcCCModel[0]);
-    ROFRS ( ruiSymbol, Err::m_nOK );
+    ROFRS (ruiSymbol, Err::m_nOK);
     getSymbol(uiSymbol, pcCCModel[1]);
     ruiSymbol = 1;
-    ROFRS ( uiSymbol, Err::m_nOK );
+    ROFRS (uiSymbol, Err::m_nOK);
 
     pcCCModel += 2;
     UInt uiCount = 2;
 
     do
     {
-        if( uiMaxBin == uiCount )
+        if(uiMaxBin == uiCount)
         {
           pcCCModel++;
         }
         getSymbol(uiSymbol, *pcCCModel);
         uiCount++;
     }
-    while( uiSymbol && (uiCount != 8));
+    while(uiSymbol && (uiCount != 8));
 
     ruiSymbol = uiCount-1;
 
-    if( uiSymbol )
+    if(uiSymbol)
     {
         getEpExGolomb(uiSymbol, 3);
         ruiSymbol += uiSymbol+1;
@@ -266,19 +267,19 @@ ErrVal CabaDecoder::getExGolombMvd( UInt& ruiSymbol, CabacContextModel* pcCCMode
 }
 
 
-ErrVal CabaDecoder::getEpExGolomb( UInt& ruiSymbol, UInt uiCount )
+ErrVal CabaDecoder::getEpExGolomb(UInt& ruiSymbol, UInt uiCount)
 {
     UInt uiSymbol = 0;
     UInt uiBit = 1;
 
-    while( uiBit )
+    while(uiBit)
     {
-      getEpSymbol(uiBit);
-      uiSymbol += uiBit << uiCount++;
+        getEpSymbol(uiBit);
+        uiSymbol += uiBit << uiCount++;
     }
 
     uiCount--;
-    while( uiCount-- )
+    while(uiCount--)
     {
         getEpSymbol(uiBit);
         uiSymbol += uiBit << uiCount;
@@ -289,36 +290,14 @@ ErrVal CabaDecoder::getEpExGolomb( UInt& ruiSymbol, UInt uiCount )
 }
 
 
-ErrVal CabaDecoder::getUnaryMaxSymbol( UInt& ruiSymbol, CabacContextModel* pcCCModel, Int iOffset, UInt uiMaxSymbol )
+ErrVal CabaDecoder::getUnaryMaxSymbol(UInt& ruiSymbol,
+                                      CabacContextModel* pcCCModel,
+                                      Int iOffset,
+                                      UInt uiMaxSymbol)
 {
     getSymbol(ruiSymbol, pcCCModel[0]);
-    ROTRS ( 0 == ruiSymbol,   Err::m_nOK );
-    ROTRS ( 1 == uiMaxSymbol, Err::m_nOK );
-
-    UInt uiSymbol = 0;
-    UInt uiCont;
-
-    do
-    {
-        getSymbol(uiCont, pcCCModel[ iOffset ]);
-        uiSymbol++;
-    }
-    while( uiCont && (uiSymbol < uiMaxSymbol-1) );
-
-    if( uiCont && (uiSymbol == uiMaxSymbol-1) )
-    {
-      uiSymbol++;
-    }
-
-    ruiSymbol = uiSymbol;
-    return Err::m_nOK;
-}
-
-
-ErrVal CabaDecoder::getUnarySymbol( UInt& ruiSymbol, CabacContextModel* pcCCModel, Int iOffset )
-{
-    getSymbol( ruiSymbol, pcCCModel[0]);
-    ROFRS ( ruiSymbol, Err::m_nOK );
+    ROTRS (0 == ruiSymbol,   Err::m_nOK);
+    ROTRS (1 == uiMaxSymbol, Err::m_nOK);
 
     UInt uiSymbol = 0;
     UInt uiCont;
@@ -328,12 +307,39 @@ ErrVal CabaDecoder::getUnarySymbol( UInt& ruiSymbol, CabacContextModel* pcCCMode
         getSymbol(uiCont, pcCCModel[iOffset]);
         uiSymbol++;
     }
-    while( uiCont );
+    while(uiCont && (uiSymbol < uiMaxSymbol-1));
+
+    if(uiCont && (uiSymbol == uiMaxSymbol-1))
+    {
+        uiSymbol++;
+    }
 
     ruiSymbol = uiSymbol;
     return Err::m_nOK;
 }
 
 
-H264AVC_NAMESPACE_END
+ErrVal CabaDecoder::getUnarySymbol(UInt& ruiSymbol,
+                                   CabacContextModel* pcCCModel,
+                                   Int iOffset)
+{
+    getSymbol(ruiSymbol, pcCCModel[0]);
+    ROFRS (ruiSymbol, Err::m_nOK);
+
+    UInt uiSymbol = 0;
+    UInt uiCont;
+
+    do
+    {
+        getSymbol(uiCont, pcCCModel[iOffset]);
+        uiSymbol++;
+    }
+    while(uiCont);
+
+    ruiSymbol = uiSymbol;
+    return Err::m_nOK;
+}
+
+
+}  //namespace JSVM {
 

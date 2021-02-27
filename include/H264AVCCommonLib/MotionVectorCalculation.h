@@ -1,37 +1,33 @@
+#ifndef _MOTIONVECTORCALCULATION_H_
+#define _MOTIONVECTORCALCULATION_H_
 
-#if !defined(AFX_MOTIONVECTORCALCULATION_H__9F13FBF7_8AD0_49DA_985B_08EE7CE0F231__INCLUDED_)
-#define AFX_MOTIONVECTORCALCULATION_H__9F13FBF7_8AD0_49DA_985B_08EE7CE0F231__INCLUDED_
+#include "Typedefs.h"
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
-class H264AVCCOMMONLIB_API MotionVectorCalculation
+class MotionVectorCalculation
 {
 protected:
   MotionVectorCalculation();
   virtual ~MotionVectorCalculation();
 
 public:
-  static ErrVal create  ( MotionVectorCalculation*& rpcMotionVectorCalculation );
+  static ErrVal create (MotionVectorCalculation*& rpcMotionVectorCalculation);
   ErrVal        destroy ();
 
-  ErrVal initSlice( const SliceHeader& rcSH );
-  ErrVal uninit();
+  ErrVal initSlice (const SliceHeader& rcSH );
+  ErrVal uninit ();
 
-  ErrVal  calcMvMb    ( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase );
-  ErrVal  calcMvSubMb ( B8x8Idx c8x8Idx, MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase );
+  ErrVal  calcMvMb (MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase);
+  ErrVal  calcMvSubMb (B8x8Idx c8x8Idx, MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase);
 
 protected:
-  Void xCalc16x16( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase );
-  Void xCalc16x8( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase );
-  Void xCalc8x16( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase );
-  Void xCalc8x8( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase, Bool bFaultTolerant );
-  Void xCalc8x8( B8x8Idx c8x8Idx, MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase, Bool bFaultTolerant );
+  Void xCalc16x16 (MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase);
+  Void xCalc16x8 (MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase);
+  Void xCalc8x16 (MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase);
+  Void xCalc8x8 (MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase, Bool bFaultTolerant);
+  Void xCalc8x8 (B8x8Idx c8x8Idx, MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase, Bool bFaultTolerant);
 
 protected:
   UInt m_uiMaxBw;
@@ -42,6 +38,6 @@ protected:
 };
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
-#endif // !defined(AFX_MOTIONVECTORCALCULATION_H__9F13FBF7_8AD0_49DA_985B_08EE7CE0F231__INCLUDED_)
+#endif //_MOTIONVECTORCALCULATION_H_

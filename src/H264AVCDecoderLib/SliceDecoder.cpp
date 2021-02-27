@@ -1,4 +1,3 @@
-
 #include "H264AVCDecoderLib.h"
 #include "MbDecoder.h"
 #include "SliceDecoder.h"
@@ -10,13 +9,13 @@
 
 #include "H264AVCCommonLib/CFMO.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
-SliceDecoder::SliceDecoder()
-: m_pcMbDecoder       ( 0 )
-, m_pcControlMng      ( 0 )
-, m_bInitDone         ( false )
+SliceDecoder::SliceDecoder() :
+    m_pcMbDecoder       (0),
+    m_pcControlMng      (0),
+    m_bInitDone         (false)
 {
 }
 
@@ -24,77 +23,73 @@ SliceDecoder::~SliceDecoder()
 {
 }
 
-ErrVal
-SliceDecoder::create( SliceDecoder*& rpcSliceDecoder )
+ErrVal SliceDecoder::create(SliceDecoder*& rpcSliceDecoder)
 {
-  rpcSliceDecoder = new SliceDecoder;
-  ROT( NULL == rpcSliceDecoder );
-  return Err::m_nOK;
+    rpcSliceDecoder = new SliceDecoder;
+    ROT (NULL == rpcSliceDecoder);
+    return Err::m_nOK;
 }
 
-ErrVal
-SliceDecoder::destroy()
+ErrVal SliceDecoder::destroy()
 {
-  ROT( m_bInitDone );
-  delete this;
-  return Err::m_nOK;
+    ROT (m_bInitDone);
+    delete this;
+    return Err::m_nOK;
 }
 
-ErrVal
-SliceDecoder::init( MbDecoder*        pcMbDecoder,
-                    ControlMngIf*     pcControlMng )
+ErrVal SliceDecoder::init(MbDecoder*    pcMbDecoder,
+                          ControlMngIf* pcControlMng)
 {
-  ROT( m_bInitDone );
-  ROF( pcMbDecoder );
-  ROF( pcControlMng );
+    ROT (m_bInitDone);
+    ROF (pcMbDecoder);
+    ROF (pcControlMng);
 
-  m_pcMbDecoder       = pcMbDecoder;
-  m_pcControlMng      = pcControlMng;
-  m_bInitDone         = true;
-  return Err::m_nOK;
+    m_pcMbDecoder       = pcMbDecoder;
+    m_pcControlMng      = pcControlMng;
+    m_bInitDone         = true;
+    return Err::m_nOK;
 }
 
 
-ErrVal
-SliceDecoder::uninit()
+ErrVal SliceDecoder::uninit()
 {
-  ROF( m_bInitDone );
+    ROF(m_bInitDone);
 
-  m_pcMbDecoder       = 0;
-  m_pcControlMng      = 0;
-  m_bInitDone         = false;
-  return Err::m_nOK;
+    m_pcMbDecoder       = 0;
+    m_pcControlMng      = 0;
+    m_bInitDone         = false;
+    return Err::m_nOK;
 }
 
 
-ErrVal SliceDecoder::decode( SliceHeader&  rcSH,
-                      MbDataCtrl*   pcMbDataCtrl,
-                      MbDataCtrl*   pcMbDataCtrlBase,
-                      Frame*        pcFrame,
-                      Frame*        pcResidualLF,
-                      Frame*        pcResidualILPred,
-                      Frame*        pcBaseLayer,
-                      Frame*        pcBaseLayerResidual,
-                      RefFrameList* pcRefFrameList0,
-                      RefFrameList* pcRefFrameList1,
-                      MbDataCtrl*   pcMbDataCtrl0L1,
-                      Bool          bReconstructAll )
+ErrVal SliceDecoder::decode(SliceHeader&  rcSH,
+                            MbDataCtrl*   pcMbDataCtrl,
+                            MbDataCtrl*   pcMbDataCtrlBase,
+                            Frame*        pcFrame,
+                            Frame*        pcResidualLF,
+                            Frame*        pcResidualILPred,
+                            Frame*        pcBaseLayer,
+                            Frame*        pcBaseLayerResidual,
+                            RefFrameList* pcRefFrameList0,
+                            RefFrameList* pcRefFrameList1,
+                            MbDataCtrl*   pcMbDataCtrl0L1,
+                            Bool          bReconstructAll)
 {
-    ROF( m_bInitDone );
+    ROF(m_bInitDone);
 
     //====== initialization ======
-    pcMbDataCtrl->initSlice( rcSH, DECODE_PROCESS, true, pcMbDataCtrl0L1);
+    pcMbDataCtrl->initSlice(rcSH, DECODE_PROCESS, true, pcMbDataCtrl0L1);
 
     const PicType ePicType = rcSH.getPicType();
-    if( ePicType != FRAME )
+    if(ePicType != FRAME)
     {
         if(pcFrame)
             pcFrame->addFieldBuffer(ePicType);
 
-        if(pcResidualLF )
+        if(pcResidualLF)
             pcResidualLF->addFieldBuffer(ePicType);
 
-        if(pcResidualILPred )
+        if(pcResidualILPred)
             pcResidualILPred->addFieldBuffer(ePicType);
 
         if(pcBaseLayer)
@@ -107,41 +102,41 @@ ErrVal SliceDecoder::decode( SliceHeader&  rcSH,
     //===== loop over macroblocks =====
     UInt uiMbAddress     = rcSH.getFirstMbInSlice();
     UInt uiNumMbsInSlice = rcSH.getNumMbsInSlice();
-    for( UInt uiNumMbsDecoded = 0; uiNumMbsDecoded < uiNumMbsInSlice; uiNumMbsDecoded++ )
+    for(UInt uiNumMbsDecoded = 0; uiNumMbsDecoded < uiNumMbsInSlice; uiNumMbsDecoded++)
     {
-      MbDataAccess* pcMbDataAccess     = NULL;
-      MbDataAccess* pcMbDataAccessBase = NULL;
-      UInt          uiMbY, uiMbX;
+        MbDataAccess* pcMbDataAccess     = NULL;
+        MbDataAccess* pcMbDataAccessBase = NULL;
+        UInt uiMbY, uiMbX;
 
-      rcSH.getMbPositionFromAddress( uiMbY, uiMbX, uiMbAddress                            );
+        rcSH.getMbPositionFromAddress(uiMbY, uiMbX, uiMbAddress);
 
-      pcMbDataCtrl->initMb(pcMbDataAccess, uiMbY, uiMbX);
-      if( pcMbDataCtrlBase )
-      {
-          pcMbDataCtrlBase->initMb(pcMbDataAccessBase, uiMbY, uiMbX);
-      }
-      m_pcControlMng->initMbForDecoding (*pcMbDataAccess, uiMbY, uiMbX, false);
+        pcMbDataCtrl->initMb(pcMbDataAccess, uiMbY, uiMbX);
+        if(pcMbDataCtrlBase)
+        {
+            pcMbDataCtrlBase->initMb(pcMbDataAccessBase, uiMbY, uiMbX);
+        }
+        m_pcControlMng->initMbForDecoding (*pcMbDataAccess, uiMbY, uiMbX, false);
 
-      if( pcMbDataAccess->getMbData().getBLSkipFlag() && ! m_apabBaseModeFlagAllowedArrays[ ePicType == FRAME ? 0 : 1 ][ uiMbAddress ] )
-      {
-        printf( "CIU constraint violated (MbAddr=%d) ==> ignore\n", uiMbAddress );
-      }
+        if(pcMbDataAccess->getMbData().getBLSkipFlag() && ! m_apabBaseModeFlagAllowedArrays[ ePicType == FRAME ? 0 : 1 ][ uiMbAddress ])
+        {
+            printf("CIU constraint violated (MbAddr=%d) ==> ignore\n", uiMbAddress);
+        }
 
-      m_pcMbDecoder->decode( *pcMbDataAccess,
-                             pcMbDataAccessBase,
-                             pcFrame                                  ->getPic( ePicType ),
-                             pcResidualLF                             ->getPic( ePicType ),
-                             pcResidualILPred                         ->getPic( ePicType ),
-                             pcBaseLayer         ? pcBaseLayer        ->getPic( ePicType ) : NULL,
-                             pcBaseLayerResidual ? pcBaseLayerResidual->getPic( ePicType ) : NULL,
-                             pcRefFrameList0,
-                             pcRefFrameList1,
-                             bReconstructAll);
+        m_pcMbDecoder->decode(*pcMbDataAccess,
+                              pcMbDataAccessBase,
+                              pcFrame                                  ->getPic(ePicType),
+                              pcResidualLF                             ->getPic(ePicType),
+                              pcResidualILPred                         ->getPic(ePicType),
+                              pcBaseLayer         ? pcBaseLayer        ->getPic(ePicType) : NULL,
+                              pcBaseLayerResidual ? pcBaseLayerResidual->getPic(ePicType) : NULL,
+                              pcRefFrameList0,
+                              pcRefFrameList1,
+                              bReconstructAll);
 
-      uiMbAddress=rcSH.getFMO()->getNextMBNr(uiMbAddress);
+        uiMbAddress=rcSH.getFMO()->getNextMBNr(uiMbAddress);
     }
 
-    if( ePicType!=FRAME )
+    if(ePicType!=FRAME)
     {
         if(pcFrame)
             pcFrame->removeFieldBuffer(ePicType);
@@ -163,21 +158,21 @@ ErrVal SliceDecoder::decode( SliceHeader&  rcSH,
 }
 
 
-ErrVal SliceDecoder::decodeMbAff( SliceHeader&   rcSH,
-                           MbDataCtrl*    pcMbDataCtrl,
-                           MbDataCtrl*    pcMbDataCtrlBase,
-                           MbDataCtrl*    pcMbDataCtrlBaseField,
-                           Frame*         pcFrame,
-                           Frame*         pcResidualLF,
-                           Frame*         pcResidualILPred,
-                           Frame*         pcBaseLayer,
-                           Frame*         pcBaseLayerResidual,
-                           RefFrameList*  pcRefFrameList0,
-                           RefFrameList*  pcRefFrameList1,
-                           MbDataCtrl*    pcMbDataCtrl0L1,
-                           Bool           bReconstructAll )
+ErrVal SliceDecoder::decodeMbAff(SliceHeader&   rcSH,
+                                 MbDataCtrl*    pcMbDataCtrl,
+                                 MbDataCtrl*    pcMbDataCtrlBase,
+                                 MbDataCtrl*    pcMbDataCtrlBaseField,
+                                 Frame*         pcFrame,
+                                 Frame*         pcResidualLF,
+                                 Frame*         pcResidualILPred,
+                                 Frame*         pcBaseLayer,
+                                 Frame*         pcBaseLayerResidual,
+                                 RefFrameList*  pcRefFrameList0,
+                                 RefFrameList*  pcRefFrameList1,
+                                 MbDataCtrl*    pcMbDataCtrl0L1,
+                                 Bool           bReconstructAll)
 {
-    ROF( m_bInitDone );
+    ROF(m_bInitDone);
 
     //====== initialization ======
     pcMbDataCtrl->initSlice(rcSH, DECODE_PROCESS, true, pcMbDataCtrl0L1);
@@ -185,21 +180,21 @@ ErrVal SliceDecoder::decodeMbAff( SliceHeader&   rcSH,
     RefFrameList acRefFrameList0[2];
     RefFrameList acRefFrameList1[2];
 
-    gSetFrameFieldLists( acRefFrameList0[0], acRefFrameList0[1], *pcRefFrameList0);
-    gSetFrameFieldLists( acRefFrameList1[0], acRefFrameList1[1], *pcRefFrameList1);
+    gSetFrameFieldLists(acRefFrameList0[0], acRefFrameList0[1], *pcRefFrameList0);
+    gSetFrameFieldLists(acRefFrameList1[0], acRefFrameList1[1], *pcRefFrameList1);
 
-    rcSH.setRefFrameList( &(acRefFrameList0[0]), TOP_FIELD, LIST_0 );
-    rcSH.setRefFrameList( &(acRefFrameList0[1]), BOT_FIELD, LIST_0 );
-    rcSH.setRefFrameList( &(acRefFrameList1[0]), TOP_FIELD, LIST_1 );
-    rcSH.setRefFrameList( &(acRefFrameList1[1]), BOT_FIELD, LIST_1 );
+    rcSH.setRefFrameList(&(acRefFrameList0[0]), TOP_FIELD, LIST_0);
+    rcSH.setRefFrameList(&(acRefFrameList0[1]), BOT_FIELD, LIST_0);
+    rcSH.setRefFrameList(&(acRefFrameList1[0]), TOP_FIELD, LIST_1);
+    rcSH.setRefFrameList(&(acRefFrameList1[1]), BOT_FIELD, LIST_1);
 
     RefFrameList* apcRefFrameList0[2];
     RefFrameList* apcRefFrameList1[2];
 
-    apcRefFrameList0[0] = ( NULL == pcRefFrameList0 ) ? NULL : &acRefFrameList0[0];
-    apcRefFrameList0[1] = ( NULL == pcRefFrameList0 ) ? NULL : &acRefFrameList0[1];
-    apcRefFrameList1[0] = ( NULL == pcRefFrameList1 ) ? NULL : &acRefFrameList1[0];
-    apcRefFrameList1[1] = ( NULL == pcRefFrameList1 ) ? NULL : &acRefFrameList1[1];
+    apcRefFrameList0[0] = (NULL == pcRefFrameList0) ? NULL : &acRefFrameList0[0];
+    apcRefFrameList0[1] = (NULL == pcRefFrameList0) ? NULL : &acRefFrameList0[1];
+    apcRefFrameList1[0] = (NULL == pcRefFrameList1) ? NULL : &acRefFrameList1[0];
+    apcRefFrameList1[1] = (NULL == pcRefFrameList1) ? NULL : &acRefFrameList1[1];
 
     Frame* apcFrame            [4] = { NULL, NULL, NULL, NULL };
     Frame* apcResidualLF       [4] = { NULL, NULL, NULL, NULL };
@@ -207,19 +202,19 @@ ErrVal SliceDecoder::decodeMbAff( SliceHeader&   rcSH,
     Frame* apcBaseLayer        [4] = { NULL, NULL, NULL, NULL };
     Frame* apcBaseLayerResidual[4] = { NULL, NULL, NULL, NULL };
 
-    gSetFrameFieldArrays( apcFrame,             pcFrame            );
-    gSetFrameFieldArrays( apcResidualLF,        pcResidualLF       );
-    gSetFrameFieldArrays( apcResidualILPred,    pcResidualILPred   );
-    gSetFrameFieldArrays( apcBaseLayer,         pcBaseLayer        );
-    gSetFrameFieldArrays( apcBaseLayerResidual, pcBaseLayerResidual);
+    gSetFrameFieldArrays(apcFrame,             pcFrame           );
+    gSetFrameFieldArrays(apcResidualLF,        pcResidualLF      );
+    gSetFrameFieldArrays(apcResidualILPred,    pcResidualILPred  );
+    gSetFrameFieldArrays(apcBaseLayer,         pcBaseLayer       );
+    gSetFrameFieldArrays(apcBaseLayerResidual, pcBaseLayerResidual);
 
     //===== loop over macroblocks =====
     Bool bSNR             = rcSH.getTCoeffLevelPredictionFlag() || rcSH.getSCoeffResidualPredFlag();
     UInt uiMbAddress      = rcSH.getFirstMbInSlice();
     UInt uiLastMbAddress  = rcSH.getFirstMbInSlice() + rcSH.getNumMbsInSlice() - 1;
-    for( ; uiMbAddress <= uiLastMbAddress; uiMbAddress+=2 )
+    for(; uiMbAddress <= uiLastMbAddress; uiMbAddress+=2)
     {
-        for( UInt eP = 0; eP < 2; eP++ )
+        for(UInt eP = 0; eP < 2; eP++)
         {
             UInt uiMbAddressMbAff = uiMbAddress + eP;
             MbDataAccess* pcMbDataAccess     = NULL;
@@ -232,27 +227,27 @@ ErrVal SliceDecoder::decodeMbAff( SliceHeader&   rcSH,
             rcSH.getMbPositionFromAddress(uiMbY, uiMbX, uiMbAddressMbAff);
 
             pcMbDataCtrl->initMb(pcMbDataAccess, uiMbY, uiMbX);
-            pcMbDataAccess->setFieldMode( pcMbDataAccess->getMbData().getFieldFlag());
+            pcMbDataAccess->setFieldMode(pcMbDataAccess->getMbData().getFieldFlag());
 
-            if( ( pcMbDataAccess->getMbPicType()==FRAME || bSNR ) && pcMbDataCtrlBase )
+            if((pcMbDataAccess->getMbPicType()==FRAME || bSNR) && pcMbDataCtrlBase)
             {
                 pcMbDataCtrlBase->initMb(pcMbDataAccessBase, uiMbY, uiMbX);
             }
-            else if( pcMbDataAccess->getMbPicType()<FRAME && !bSNR && pcMbDataCtrlBaseField )
+            else if(pcMbDataAccess->getMbPicType()<FRAME && !bSNR && pcMbDataCtrlBaseField)
             {
                 pcMbDataCtrlBaseField->initMb(pcMbDataAccessBase, uiMbY, uiMbX);
             }
 
-            if( bSNR && rcSH.getSliceSkipFlag() )
+            if(bSNR && rcSH.getSliceSkipFlag())
             {
-                pcMbDataAccess->setFieldMode( pcMbDataAccessBase->getMbData().getFieldFlag() );
+                pcMbDataAccess->setFieldMode(pcMbDataAccessBase->getMbData().getFieldFlag());
             }
 
             m_pcControlMng->initMbForDecoding(*pcMbDataAccess, uiMbY, uiMbX, true);
 
             const PicType eMbPicType  = pcMbDataAccess->getMbPicType();
             const UInt    uiLI        = eMbPicType - 1;
-            if( FRAME == eMbPicType )
+            if(FRAME == eMbPicType)
             {
                 pcRefFrameList0F = pcRefFrameList0;
                 pcRefFrameList1F = pcRefFrameList1;
@@ -263,12 +258,12 @@ ErrVal SliceDecoder::decodeMbAff( SliceHeader&   rcSH,
                 pcRefFrameList1F = apcRefFrameList1[eP];
             }
 
-            if( pcMbDataAccess->getMbData().getBLSkipFlag() && ! m_apabBaseModeFlagAllowedArrays[ eMbPicType == FRAME ? 0 : 1 ][ uiMbAddressMbAff ] )
+            if(pcMbDataAccess->getMbData().getBLSkipFlag() && ! m_apabBaseModeFlagAllowedArrays[ eMbPicType == FRAME ? 0 : 1 ][ uiMbAddressMbAff ])
             {
-                printf( "CIU constraint violated (MbAddr=%d) ==> ignore\n", uiMbAddressMbAff );
+                printf("CIU constraint violated (MbAddr=%d) ==> ignore\n", uiMbAddressMbAff);
             }
 
-            m_pcMbDecoder->decode ( *pcMbDataAccess,
+            m_pcMbDecoder->decode (*pcMbDataAccess,
                                     pcMbDataAccessBase,
                                     apcFrame[uiLI],
                                     apcResidualLF[uiLI],
@@ -305,4 +300,4 @@ ErrVal SliceDecoder::decodeMbAff( SliceHeader&   rcSH,
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
